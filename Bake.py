@@ -1,5 +1,6 @@
 import inspect
 
+
 class BakeException(Exception):
     pass
 
@@ -20,14 +21,16 @@ class Targets:
     def addTarget(self, toAdd):
         for func in self.targets:
             if func.__name__ == toAdd.__name__:
-                raise BakeException(f"duplicate target names: {function.__name__}")
+                raise BakeException(f"duplicate target names: {func.__name__}")
 
         if toAdd.__doc__ is None:
-            raise BakeException("Bake requires doc-strings for target functions (denoted by a triple quoted comment as the first thing in the function body)")
+            raise BakeException(
+                "Bake requires doc-strings for target functions (denoted by a triple quoted comment as the first thing in the function body)")
 
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(toAdd)
         if len(names) != 0 or defaults is not None:
-            raise BakeException("Bake requires functions with arguments to use exclusively keyword arguments (denoted by a [*] as the first argument to the function)")
+            raise BakeException(
+                "Bake requires functions with arguments to use exclusively keyword arguments (denoted by a [*] as the first argument to the function)")
         if varargs is not None:
             raise BakeException("Bake does not support varargs")
         if varkw is not None:
@@ -72,9 +75,15 @@ def one():
 
 
 @target
-def two(*, arg1: int=5, arg2):
+def two(*, arg1: int = 5, arg2):
     """doc string for two"""
     print("two")
+
+
+@target
+def two():
+    """fake two"""
+    pass
 
 
 print(targets.man())
