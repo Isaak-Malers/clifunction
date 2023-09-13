@@ -1,8 +1,50 @@
+#!/usr/bin/env python3
+
 import inspect
+import sys
+import re
 
 
 class BakeException(Exception):
     pass
+
+
+class DefaultArgumentParser:
+    def __init__(self):
+        pass
+
+    def nameAndAbbreviations(self, *, pythonName: str) -> [str]:
+        # Try to figure out if the python name is camel or snake case, and then figure out if there is a valid
+        # abbreviation.
+        if '_' in pythonName:
+            matches = re.findall(r'_[a-zA-Z0-9]', pythonName)
+            abbreviation = pythonName[0] + "".join([char[1] for char in matches])
+        else:
+            matches = re.findall(r'[A-Z0-9]', pythonName)
+            abbreviation = pythonName[0] + "".join([char for char in matches])
+
+        return [pythonName, abbreviation, abbreviation.lower()]
+
+    def generateMethodArgs(self, *, args: [str], function):
+        """
+            should be passed the args string list from the terminal which will look something like this:
+            ['Bake.py', 'two', --arg1=5]
+            and a function which may or may not be invoke-able given the information in the args string list.
+
+            if the function cannot be invoked from the given arguments, return None
+            if the function CAN be invoked from the given arguments, return a dict formatted such that the method can be invoked with that dict for the arguments.
+        """
+
+        invokeName = args[1]
+        functionName = function.__name__
+
+        if invokeName not in self.nameAndAbbreviations(pythonName=functionName):
+            return None
+
+        # Try to build up the kwarg dict.  If anything tries to double add, bail out.
+        names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(function)
+
+        return {}
 
 
 class Targets:
@@ -68,23 +110,32 @@ def target(targetToAdd):
     return targetToAdd
 
 
-@target
-def one():
-    """doc string for one"""
-    print("one")
+def bake(args: str = None):
+    if args is None:
+        args = sys.argv
 
+    if len(args) < 3:
+        print(targets.man())
+        raise SystemExit(1)
 
-@target
-def two(*, arg1: int = 5, arg2):
-    """doc string for two"""
-    print("two")
+    parser = DefaultArgumentParser()
+    potentialMatches = {}
+    for f in targets.targets:
+        methodArgs = parser.generateMethodArgs(function=f, args=args)
+        print("--------")
+        print(f.__name__)
+        print(methodArgs)
+        if methodArgs is not None:
+            potentialMatches[f.__name__] = methodArgs
 
+    if len(potentialMatches) == 0:
+        print("Unable to find function to call")
+        print(targets.man)
+        raise SystemExit(1)
 
-@target
-def two():
-    """fake two"""
-    pass
+    if len(potentialMatches) == 1:
+        print("Running Function!")
 
-
-print(targets.man())
-print(targets.man(two.__name__))
+    if len(potentialMatches) > 1:
+        print("Invoke Arguments match multiple functions")
+        raise SystemExit(1)
