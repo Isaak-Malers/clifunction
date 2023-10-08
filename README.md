@@ -1,4 +1,4 @@
-![Build](https://github.com/Isaak-Malers/DecoratorCLI/actions/workflows/Python application/badge.svg)
+![Build](https://github.com/Isaak-Malers/DecoratorCLI/actions/workflows/PythonApplication/badge.svg)
 
 
 # DecoratorCLI
