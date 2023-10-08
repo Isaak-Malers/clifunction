@@ -99,12 +99,12 @@ class DefaultArgumentParser:
                     # Note:  This means that the user didn't specify a value, so we treated it as a flag.
                     # If this method doesn't allow for a bool on that argument, we cannot match and should return none
                     if arg_value is True:
-                        if type(True) is not annotations[arg_name]:
+                        if type(True) is not annotations[name]:
                             return None
                         kwargs_to_return[name] = arg_value
                     else:  # arg_value is a string
                         # Coerce Type:
-                        typed_value = self.type_coercer(arg=arg_value, desired_type=annotations[arg_name])
+                        typed_value = self.type_coercer(arg=arg_value, desired_type=annotations[name])
                         if typed_value is None:
                             return None
                         kwargs_to_return[name] = typed_value
