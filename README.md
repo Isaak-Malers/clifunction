@@ -1,5 +1,5 @@
-# Bake
-I wanted Cake, but in python.  This is currently an incomplete project, Check back later to see if its complete/usable yet.
+# DecoratorCLI
+I wanted Cake, but in python.  This is currently a minimum viable product.  Check back for more features.
 
 # Project Goals:
 * Use modern python language features to make invoking python functions from the command line easy.  familiar CLI options like "Man" or "Help" should be populated automatically from type hints and doc strings.
