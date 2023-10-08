@@ -1,4 +1,5 @@
-from Bake import target, bake
+import DecoratorCLI
+from DecoratorCLI import target
 
 
 @target
@@ -37,4 +38,4 @@ def migrate_db(*, start_version: int = 0, end_version: int = 3):
 
 
 if __name__ == "__main__":
-    bake()
+    DecoratorCLI.cli()

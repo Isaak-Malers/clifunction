@@ -5,7 +5,7 @@ import sys
 import re
 
 
-class BakeException(Exception):
+class DecoratorCliException(Exception):
     pass
 
 
@@ -13,7 +13,7 @@ class DefaultArgumentParser:
     def __init__(self):
         pass
 
-    def name_and_abbreviations(self, *, python_name: str) -> [str]:
+    def name_and_abbreviations(self, *, python_name: str) -> [str]: # noqa
         """
         Given a string name for a python function or method or argument, returns a list with multiple possible matches.
         Examples:
@@ -40,7 +40,7 @@ class DefaultArgumentParser:
     def generate_method_kwargs(self, *, args: [str], function) -> dict:
         """
             should be passed the args string list from the terminal which will look something like this:
-            ['Bake.py', 'two', '--arg1=5']
+            ['DecoratorCLI.py', 'two', '--arg1=5']
             and a function which may or may not be invoke-able given the information in the args string list.
 
             if the function cannot be invoked from the given arguments, return None
@@ -53,32 +53,32 @@ class DefaultArgumentParser:
         if invoke_name not in self.name_and_abbreviations(python_name=function_name):
             return None
 
-        kwargsToReturn = {}
+        kwargs_to_return = {}
 
         # Try to build up the kwarg dict.  If anything tries to double add, bail out.
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(function)
 
         # Check that all args specified have a place to go:
         for arg in args[2:]:
-            argName = arg.split("=")[0].replace("-", "")
-            argValue = True
+            arg_name = arg.split("=")[0].replace("-", "")
+            arg_value = True
             if len(arg.split("=")) == 2:
-                argValue = arg.split("=")[1]
+                arg_value = arg.split("=")[1]
 
             added = False
             for name in kwonlyargs:
-                if argName in self.name_and_abbreviations(python_name=name):
-                    if name in kwargsToReturn:
+                if arg_name in self.name_and_abbreviations(python_name=name):
+                    if name in kwargs_to_return:
                         # TODO:  See if we can make this give better errors.
                         # The function has an ambiguous naming scheme, this should probably error out?
                         return None
                     # TODO: match types, right now only true and str are working
-                    kwargsToReturn[name] = argValue
+                    kwargs_to_return[name] = arg_value
                     added = True
             if added is False:
                 return None
 
-        return kwargsToReturn
+        return kwargs_to_return
 
 
 class Targets:
@@ -137,20 +137,20 @@ class Targets:
     def add_target(self, to_add):
         for func in self.targets:
             if func.__name__ == to_add.__name__:
-                raise BakeException(f"duplicate target names: {func.__name__}")
+                raise DecoratorCliException(f"duplicate target names: {func.__name__}")
 
         if to_add.__doc__ is None:
-            raise BakeException(
+            raise DecoratorCliException(
                 "Bake requires doc-strings for target functions (denoted by a triple quoted comment as the first thing in the function body)")
 
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(to_add)
         if len(names) != 0 or defaults is not None:
-            raise BakeException(
+            raise DecoratorCliException(
                 "Bake requires functions with arguments to use exclusively keyword arguments (denoted by a [*] as the first argument to the function)")
         if varargs is not None:
-            raise BakeException("Bake does not support varargs")
+            raise DecoratorCliException("Bake does not support varargs")
         if varkw is not None:
-            raise BakeException("Bake does not support varargs")
+            raise DecoratorCliException("Bake does not support varargs")
         self.targets.append(to_add)
 
     def man(self, name=None):
@@ -184,7 +184,7 @@ def target(target_to_add):
     return target_to_add
 
 
-def bake(args: [str] = None):
+def cli(args: [str] = None):
     if args is None:
         args = sys.argv
 

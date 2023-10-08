@@ -1,4 +1,4 @@
-from ..Bake import DefaultArgumentParser
+from ..DecoratorCLI import DefaultArgumentParser
 
 class TestAbbreviations:
 

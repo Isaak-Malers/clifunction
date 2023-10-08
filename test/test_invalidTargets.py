@@ -1,6 +1,6 @@
 import pytest
 
-from ..Bake import Targets, BakeException
+from ..DecoratorCLI import Targets, DecoratorCliException
 
 
 def one():
@@ -36,10 +36,10 @@ class TestInvalidTargets:
         t = Targets()
         with pytest.raises(Exception) as e:
             t.add_target(noDocstring)
-        assert e.type == BakeException
+        assert e.type == DecoratorCliException
 
     def test_no_kwargs_only(self):
         t = Targets()
         with pytest.raises(Exception) as e:
             t.add_target(noKwargs)
-        assert e.type == BakeException
+        assert e.type == DecoratorCliException
