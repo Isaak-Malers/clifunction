@@ -20,6 +20,10 @@ class TestGenerateMethodKwargs:
     def complex_method(*, arg1: str, arg2: str, arg3: str, arg4: str, arg5: str, arg6: str, arg7: str, arg8: str, arg9: str):
         return "wtf"
 
+    def test_shorthands(self):
+        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'bool_args', '-a'], function=self.bool_args) == {"arg": True}
+        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'some_args', '-a=hello'], function=self.some_args) == {"arg": 'hello'}
+
     def test_name_doesnt_match(self):
         assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', "too"], function=self.two) is None
 
