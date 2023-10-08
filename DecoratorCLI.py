@@ -117,11 +117,8 @@ class DefaultArgumentParser:
 
 class Targets:
     def __init__(self):
-        self.headingName = "Targets"
-        self.targets = []  # These are not in a subdirectory
+        self.targets = []  # list of all the targets from within the 'file_name.py' file
         self.parser = DefaultArgumentParser()
-
-        self.recursiveTargets: [Targets] = []
 
     def printer(self, to_print: str):  # noqa
         """
@@ -200,8 +197,22 @@ class Targets:
         args_string = f"\n\t{pad}".join(args)
         return header + f"\n\t{pad}" + args_string
 
-    def man(self, pad: str = ""):
-        header = f"{pad}{self.headingName}"
+    def man(self, calling_file: str = None, pad: str = ""):
+        # we want to split the targets up by what file they were in originally.
+        # put them in a dict where the key is the filename and the values are lists of functions.
+        sorted_targets = {}
+        for func in self.targets:
+            file_name = inspect.getfile(func)
+            if file_name in sorted_targets:
+                sorted_targets[file_name].append(func)
+            else:
+                file_name[sorted_targets] = [func]
+
+        # When we print the manuel, we want it sorted alphabetically by file, except whatever file got CALLED should be at the top of the list.
+        
+
+
+        header = f"{pad}{self.file_name}"
         function_docs = []
         for func in self.targets:
             function_docs.append(self.function_help(func=func, pad=pad + "\t"))
