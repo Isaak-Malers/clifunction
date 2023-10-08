@@ -39,4 +39,4 @@ def migrate_db(*, start_version: int = 0, end_version: int = 3):
 
 
 if __name__ == "__main__":
-    DecoratorCLI.cli()
+    DecoratorCLI.cli(['Example.py', 'migrate_db', '-sv=1'])

@@ -1,3 +1,5 @@
+import pytest
+
 from ..DecoratorCLI import DefaultArgumentParser
 
 
@@ -20,6 +22,34 @@ class TestGenerateMethodKwargs:
     def complex_method(*, arg1: str, arg2: str, arg3: str, arg4: str, arg5: str, arg6: str, arg7: str, arg8: str, arg9: str):
         return "wtf"
 
+    @staticmethod
+    def types(*, st: str, bo: bool, inn: int, fl: float):
+        return "yay types"
+
+    @staticmethod
+    def types2(*, retries: int):
+        return "moreTests"
+
+    @staticmethod
+    def bad_shorthands(*, url: str, unicode: bool):
+        """These both have the same abbreviation"""
+        return "bad"
+
+    def test_bad_shorthands(self):
+        assert self.t.generate_method_kwargs(args=['d.py', 'bad_shorthands', '-u=localhost'], function=self.bad_shorthands) is None
+
+    def test_good_shorthands(self):
+        assert self.t.generate_method_kwargs(args=['d.py', 'types2', '-r=5'], function=self.types2) == {'retries': 5}
+
+    def test_type_coercion(self):
+        assert self.t.generate_method_kwargs(args=['d.py', 'types', '--st=happy', '--bo=false', '--inn=5', '--fl=4.8'], function=self.types) == {'st': 'happy', 'bo': False, 'inn': 5, 'fl': 4.8}
+
+    def test_failed_type_coercion(self):
+        assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=notAnInt'], function=self.types2) is None
+        assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=5.4'], function=self.types2) is None
+        assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=True'], function=self.types2) is None
+        assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=5'], function=self.types2) == {'retries': 5}
+
     def test_name_doesnt_match(self):
         assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', "too"], function=self.two) is None
 
@@ -34,6 +64,12 @@ class TestGenerateMethodKwargs:
     def test_boolean(self):
         assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'bool_args', '--arg'], function=self.bool_args) == {"arg": True}
         assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'bool_args'], function=self.bool_args) == {}
+
+    def test_flag_on_non_flag_argument(self):
+        """
+        For this test we pass an argument in with the shorthand for True and expect it to throw if the argument type isn't bool
+        """
+        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'some_args', '--arg'], function=self.some_args) is None
 
     def test_complex(self):
         assert self.t.generate_method_kwargs(args=[

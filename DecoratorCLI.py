@@ -35,6 +35,31 @@ class DefaultArgumentParser:
         # write
         return sorted(list({python_name, abbreviation.lower()}), key=lambda item: -len(item))
 
+    def type_coercer(self, *, arg: str, desired_type: type):  # noqa
+
+        if desired_type is str:
+            return arg
+
+        if desired_type is bool:
+            if arg.lower() in ['true', 't', 'y', 'yes']:
+                return True
+            elif arg.lower() in ['false', 'f', 'n', 'no']:
+                return False
+            else:
+                return None
+
+        try:
+            if desired_type is int:
+                return int(arg)
+
+            if desired_type is float:
+                return float(arg)
+        except Exception:  # noqa
+            return None  # what a vile pythonic thing to do.
+
+        else:
+            return None
+
     def generate_method_kwargs(self, *, args: [str], function) -> dict:
         """
             should be passed the args string list from the terminal which will look something like this:
@@ -70,8 +95,19 @@ class DefaultArgumentParser:
                         # TODO:  See if we can make this give better errors.
                         # The function has an ambiguous naming scheme, this should probably error out?
                         return None
-                    # TODO: match types, right now only true and str are working
-                    kwargs_to_return[name] = arg_value
+
+                    # Note:  This means that the user didn't specify a value, so we treated it as a flag.
+                    # If this method doesn't allow for a bool on that argument, we cannot match and should return none
+                    if arg_value is True:
+                        if type(True) is not annotations[arg_name]:
+                            return None
+                        kwargs_to_return[name] = arg_value
+                    else:  # arg_value is a string
+                        # Coerce Type:
+                        typed_value = self.type_coercer(arg=arg_value, desired_type=annotations[arg_name])
+                        if typed_value is None:
+                            return None
+                        kwargs_to_return[name] = typed_value
                     added = True
             if added is False:
                 return None

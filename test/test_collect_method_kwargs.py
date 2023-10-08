@@ -36,6 +36,15 @@ class TestCollectMethodKwargs:
         assert len(result.keys()) == 1
         assert list(result.values())[0].get('arg') == 'notADefault'
 
+    def test_ambiguous_shorthand(self):
+        t = Targets()
+        t.add_target(self.two)
+        t.add_target(self.some_args)
+        t.add_target(self.special_address)
+
+        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'sa', '-a=ThisIsNotGoodEnough'])
+        assert len(result.keys()) == 2
+
     def test_multiple_matches(self):
         t = Targets()
         t.add_target(self.two)
