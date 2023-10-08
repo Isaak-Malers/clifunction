@@ -176,7 +176,7 @@ class Targets:
 targets = Targets()
 
 
-def target(target_to_add):
+def cli_function(target_to_add):
     targets.add_target(target_to_add)
     return target_to_add
 

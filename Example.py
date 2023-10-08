@@ -1,8 +1,8 @@
 import DecoratorCLI
-from DecoratorCLI import target
+from DecoratorCLI import cli_function
 
 
-@target
+@cli_function
 def deploy(*, build_first: bool = True, test_first: bool = True):
     """
     builds*, tests*, and then deploys the code!
@@ -14,7 +14,7 @@ def deploy(*, build_first: bool = True, test_first: bool = True):
     print("Deploying Code!")
 
 
-@target
+@cli_function
 def build():
     """
     Python is Interpreted!
@@ -22,7 +22,7 @@ def build():
     print("Building Code!")
 
 
-@target
+@cli_function
 def test():
     """
     Execs out to PyTest
@@ -30,7 +30,7 @@ def test():
     print("Running Tests!")
 
 
-@target
+@cli_function
 def migrate_db(*, start_version: int = 0, end_version: int = 3):
     """
     Runs DB migrations.
