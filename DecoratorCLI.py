@@ -11,7 +11,7 @@ class DefaultArgumentParser:
     def __init__(self):
         pass
 
-    def name_and_abbreviations(self, *, python_name: str) -> [str]: # noqa
+    def name_and_abbreviations(self, *, python_name: str) -> [str]:  # noqa
         """
         Given a string name for a python function or method or argument, returns a list with multiple possible matches.
         Examples:
@@ -151,27 +151,26 @@ class Targets:
             raise DecoratorCliException("Bake does not support varargs")
         self.targets.append(to_add)
 
-    def man(self, name=None):
-        strings = []
+    def function_help(self, func, pad: str = "") -> str:  # noqa
+        header = f"{pad}{func.__name__} -- {func.__doc__.strip()}"
+        names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(func)
+        if kwonlydefaults is None:
+            kwonlydefaults = {}
+
+        args = []
+        for name in kwonlyargs:
+            arg = f"{name} | default:{kwonlydefaults.get(name, 'N/A')} | type:{annotations.get(name, 'N/A')}"
+            args.append(arg)
+        args_string = f"\n\t{pad}".join(args)
+        return header + f"\n\t{pad}" + args_string
+
+    def man(self, pad: str = ""):
+        header = f"{pad}{self.headingName}"
+        function_docs = []
         for func in self.targets:
-            if name is not None and name != func.__name__:
-                continue
-            header = f"{func.__name__} -- {func.__doc__}"
-            names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(func)
-            if kwonlydefaults is None:
-                kwonlydefaults = {}
-
-            if len(kwonlyargs) == 0:
-                strings.append(header)
-                continue
-
-            args = []
-            for name in kwonlyargs:
-                arg = f"{name} | default:{kwonlydefaults.get(name, 'N/A')} | type:{annotations.get(name, 'N/A')}"
-                args.append(arg)
-            strings.append(header + "\n\t\t" + "\n\t\t".join(args))
-
-        return self.headingName + "-----------------------------" + "\n\t" + "\n\t".join(strings)
+            function_docs.append(self.function_help(func=func, pad=pad + "\t"))
+        function_docs_string = "\n".join(function_docs)
+        return header + "\n" + function_docs_string
 
 
 targets = Targets()
@@ -185,6 +184,10 @@ def target(target_to_add):
 def cli(args: [str] = None):
     if args is None:
         args = sys.argv
+
+    if len(args) < 2:
+        print(targets.man())
+        raise SystemExit(1)
 
     if not targets.execute(args=args):
         print(targets.man())
