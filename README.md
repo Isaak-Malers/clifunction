@@ -1,3 +1,6 @@
+![Build](https://github.com/Isaak-Malers/DecoratorCLI/actions/workflows/WORKFLOW-FILE/badge.svg)
+
+
 # DecoratorCLI
 I wanted Cake, but in python.  This is currently a minimum viable product.  Check back for more features.
 
