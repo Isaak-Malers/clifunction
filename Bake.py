@@ -89,17 +89,44 @@ class Targets:
 
         self.recursiveTargets: [Targets] = []
 
-    def get_matches(self, args: [str]) -> [(object, dict)]:
-        """given an args string, looks through itself and tries to find matching functions to execute."""
-        toReturn = []
-        for t in self.targets:
-            if '-' in args[1]:
-                candidate = self.parser.generate_method_kwargs(args=args, function=t)
-                if candidate is not None:
-                    toReturn.append((t, candidate))
+    def printer(self, to_print: str):  # noqa
+        """
+            Note:  This function is only here so that this object is easy to mock/patch for unit tests.
+        """
+        print(to_print)
 
-        # TODO: hunt through the recursive targets here.
-        return toReturn
+    def collect_method_kwargs(self, *, args: [str]) -> dict:
+        """
+        Generates a dict with keys of functions, and values of kwargs that potentially match.
+        """
+        to_return = {}
+
+        for t in self.targets:
+            candidate = self.parser.generate_method_kwargs(args=args, function=t)
+            if candidate is not None:
+                to_return[t] = candidate
+        return to_return
+
+    def execute(self, *, args: [str]) -> bool:
+        """Given some args, attempts to execute the function, returns false if it fails to execute a function"""
+        run_candidates = self.collect_method_kwargs(args=args)
+
+        # Happy Path:
+        if len(run_candidates.keys()) == 1:
+            key, value = list(run_candidates.items())[0]
+            self.printer(f"{key.__name__}:  {value}")
+            key(**value)
+            return True
+
+        # Non-Successful Cases:
+        if len(run_candidates.keys()) == 0:
+            self.printer(f"No Matches found for args: {args}")
+            return False
+        if len(run_candidates.keys()) > 1:
+            self.printer(f"Multiple Matches found for args: {args}")
+            for key, value in run_candidates.items():
+                self.printer(f"{key.__name__}:  {value}")
+            return False
 
     def has_target(self, to_add):
         for function in self.targets:
@@ -152,28 +179,15 @@ class Targets:
 targets = Targets()
 
 
-def target(targetToAdd):
-    targets.add_target(targetToAdd)
-    return targetToAdd
+def target(target_to_add):
+    targets.add_target(target_to_add)
+    return target_to_add
 
 
 def bake(args: [str] = None):
     if args is None:
         args = sys.argv
 
-    print(args)
-
-    if len(args) < 2:
+    if not targets.execute(args=args):
         print(targets.man())
         raise SystemExit(1)
-
-    print("executing")
-    matches = targets.get_matches(args)
-    if len(matches) == 0:
-        print("no matching functions found")
-        raise SystemExit(1)
-
-    if len(matches) > 1:
-        print("ambiguous command, multiple matching functions found")
-        raise SystemExit(1)
-

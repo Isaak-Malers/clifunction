@@ -1,6 +1,6 @@
 import pytest
 
-from ..Bake import Targets
+from ..Bake import Targets, BakeException
 
 
 def one():
@@ -17,6 +17,10 @@ def noDocstring():
     pass
 
 
+def noKwargs(myarg, myarg2):
+    """But it does have docstrings"""
+    pass
+
 def camelCase():
     """camel Case"""
     pass
@@ -28,6 +32,14 @@ def snake_case():
 
 
 class TestInvalidTargets:
-    def test_noDocstring(self):
+    def test_no_docstring(self):
         t = Targets()
-        t.add_target(noDocstring())
+        with pytest.raises(Exception) as e:
+            t.add_target(noDocstring)
+        assert e.type == BakeException
+
+    def test_no_kwargs_only(self):
+        t = Targets()
+        with pytest.raises(Exception) as e:
+            t.add_target(noKwargs)
+        assert e.type == BakeException

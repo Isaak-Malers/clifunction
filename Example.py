@@ -2,15 +2,16 @@ from Bake import target, bake
 
 
 @target
-def deploy(*, Build: bool = True, Test: bool = True):
+def deploy(*, build_first: bool = True, test_first: bool = True):
     """
     Example of how you might set up a deployment script
     """
-    if Build:
+    if build_first:
         build()
-    if Test:
+    if test_first:
         test()
     print("Deploying Code!")
+
 
 @target
 def build():
@@ -36,4 +37,4 @@ def migrate_db(*, start_version: int = 0, end_version: int = 3):
 
 
 if __name__ == "__main__":
-    bake(args=['Example.py', 'deploy', '-T'])
+    bake()
