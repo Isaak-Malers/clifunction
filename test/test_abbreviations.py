@@ -1,4 +1,4 @@
-from ..DecoratorCLI import DefaultArgumentParser
+from ..CliFunction import DefaultArgumentParser
 
 class TestAbbreviations:
 

@@ -1,4 +1,4 @@
-from ..DecoratorCLI import DefaultArgumentParser, Targets
+from ..CliFunction import DefaultArgumentParser, Targets
 
 
 class TestCollectMethodKwargs:
@@ -23,16 +23,16 @@ class TestCollectMethodKwargs:
         t.add_target(self.two)
         t.add_target(self.some_args)
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'noMatch'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'noMatch'])
         assert len(result.keys()) == 0
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'two'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'two'])
         assert len(result.keys()) == 1
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'some_args'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'some_args'])
         assert len(result.keys()) == 1
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'some_args', '--arg=notADefault'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'some_args', '--arg=notADefault'])
         assert len(result.keys()) == 1
         assert list(result.values())[0].get('arg') == 'notADefault'
 
@@ -42,7 +42,7 @@ class TestCollectMethodKwargs:
         t.add_target(self.some_args)
         t.add_target(self.special_address)
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'sa', '-a=ThisIsNotGoodEnough'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'sa', '-a=ThisIsNotGoodEnough'])
         assert len(result.keys()) == 2
 
     def test_multiple_matches(self):
@@ -51,17 +51,17 @@ class TestCollectMethodKwargs:
         t.add_target(self.some_args)
         t.add_target(self.special_address)
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'sa'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'sa'])
         assert len(result.keys()) == 2
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'sa', '--arg=ThisSpecifies'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'sa', '--arg=ThisSpecifies'])
         assert len(result.keys()) == 1
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'sa', '-a=ThisIsNotGoodEnough'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'sa', '-a=ThisIsNotGoodEnough'])
         assert len(result.keys()) == 2
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'some_args'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'some_args'])
         assert len(result.keys()) == 1
 
-        result = t.collect_method_kwargs(args=['DecoratorCLI.py', 'some_args', '--address=ThisShouldBeZero'])
+        result = t.collect_method_kwargs(args=['CliFunction', 'some_args', '--address=ThisShouldBeZero'])
         assert len(result.keys()) == 0

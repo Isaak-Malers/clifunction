@@ -1,6 +1,6 @@
 import pytest
 
-from ..DecoratorCLI import Targets
+from ..CliFunction import Targets
 
 
 class TestExecute:
@@ -22,13 +22,13 @@ class TestExecute:
     def test_matching_and_running(self):
         t = Targets()
         t.add_target(self.two)
-        ran = t.execute(args=['DecoratorCLI.py', 'two'])
+        ran = t.execute(args=['CliFunction', 'two'])
         assert ran is True
 
     def test_no_match(self):
         t = Targets()
         t.add_target(self.two)
-        ran = t.execute(args=['DecoratorCLI.py', 'noMatch'])
+        ran = t.execute(args=['CliFunction', 'noMatch'])
         assert ran is False
 
     def test_multiple_matches(self):
@@ -36,5 +36,5 @@ class TestExecute:
         t.add_target(self.two)
         t.add_target(self.some_args)
         t.add_target(self.special_address)
-        ran = t.execute(args=['DecoratorCLI.py', 'sa'])
+        ran = t.execute(args=['CliFunction', 'sa'])
         assert ran is False

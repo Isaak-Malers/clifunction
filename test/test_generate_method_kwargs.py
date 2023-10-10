@@ -1,6 +1,6 @@
 import pytest
 
-from ..DecoratorCLI import DefaultArgumentParser
+from ..CliFunction import DefaultArgumentParser
 
 
 class TestGenerateMethodKwargs:
@@ -50,33 +50,33 @@ class TestGenerateMethodKwargs:
         assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=True'], function=self.types2) is None
         assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=5'], function=self.types2) == {'retries': 5}
     def test_shorthands(self):
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'bool_args', '-a'], function=self.bool_args) == {"arg": True}
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'some_args', '-a=hello'], function=self.some_args) == {"arg": 'hello'}
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'bool_args', '-a'], function=self.bool_args) == {"arg": True}
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'some_args', '-a=hello'], function=self.some_args) == {"arg": 'hello'}
 
     def test_name_doesnt_match(self):
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', "too"], function=self.two) is None
+        assert self.t.generate_method_kwargs(args=['CliFunction', "too"], function=self.two) is None
 
     def test_no_args(self):
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'two', '--arg1=5'], function=self.two) is None
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'two'], function=self.two) == {}
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'two', '--arg1=5'], function=self.two) is None
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'two'], function=self.two) == {}
 
     def test_basic(self):
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'some_args', '--arg=hello'], function=self.some_args) == {"arg": 'hello'}
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'some_args'], function=self.some_args) == {}
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'some_args', '--arg=hello'], function=self.some_args) == {"arg": 'hello'}
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'some_args'], function=self.some_args) == {}
 
     def test_boolean(self):
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'bool_args', '--arg'], function=self.bool_args) == {"arg": True}
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'bool_args'], function=self.bool_args) == {}
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'bool_args', '--arg'], function=self.bool_args) == {"arg": True}
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'bool_args'], function=self.bool_args) == {}
 
     def test_flag_on_non_flag_argument(self):
         """
         For this test we pass an argument in with the shorthand for True and expect it to throw if the argument type isn't bool
         """
-        assert self.t.generate_method_kwargs(args=['DecoratorCLI.py', 'some_args', '--arg'], function=self.some_args) is None
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'some_args', '--arg'], function=self.some_args) is None
 
     def test_complex(self):
         assert self.t.generate_method_kwargs(args=[
-            'DecoratorCLI.py',
+            'CliFunction',
             'complex_method',
             '--arg1=a',
             '--arg2=b',
@@ -89,7 +89,7 @@ class TestGenerateMethodKwargs:
             '--arg9=i'],
             function=self.complex_method) == {"arg1": "a", "arg2": "b", "arg3": "c", "arg4": "d", "arg5": "e", "arg6": "f", "arg7": "g", "arg8": "h", "arg9": "i"}
         assert self.t.generate_method_kwargs(args=[
-            'DecoratorCLI.py',
+            'CliFunction',
             'complex_method',
             '--arg1=a',
             '--arg2=b'],

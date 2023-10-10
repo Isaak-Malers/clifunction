@@ -1,6 +1,6 @@
 import pytest
 
-from ..DecoratorCLI import Targets, DecoratorCliException
+from ..CliFunction import Targets, FunctionCliException
 
 
 def one():
@@ -36,10 +36,10 @@ class TestInvalidTargets:
         t = Targets()
         with pytest.raises(Exception) as e:
             t.add_target(noDocstring)
-        assert e.type == DecoratorCliException
+        assert e.type == FunctionCliException
 
     def test_no_kwargs_only(self):
         t = Targets()
         with pytest.raises(Exception) as e:
             t.add_target(noKwargs)
-        assert e.type == DecoratorCliException
+        assert e.type == FunctionCliException

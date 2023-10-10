@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "clifunction"
+version = "0.1.0"
+authors = [
+  { name="Isaak Malers", email="isaak.malers+clifunction@gmail.com" },
+]
+description = "Build a fully featured CLI for your python project with minium effort"
+readme = "PyPI_Readme.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Isaak-Malers/DecoratorCLI"
+"Bug Tracker" = "https://github.com/Isaak-Malers/DecoratorCLI/issues"
+
+[tool.hatch.build]
+include = ["CliFunction.py"]
+exclude = [
+    "Example.py",
+    "/docs",
+    "/test"
+]

@@ -3,7 +3,7 @@ import sys
 import re
 
 
-class DecoratorCliException(Exception):
+class FunctionCliException(Exception):
     pass
 
 
@@ -63,7 +63,7 @@ class DefaultArgumentParser:
     def generate_method_kwargs(self, *, args: [str], function) -> dict:
         """
             should be passed the args string list from the terminal which will look something like this:
-            ['DecoratorCLI.py', 'two', '--arg1=5']
+            ['FunctionCLI.py', 'two', '--arg1=5']
             and a function which may or may not be invoke-able given the information in the args string list.
 
             if the function cannot be invoked from the given arguments, return None
@@ -171,20 +171,20 @@ class Targets:
     def add_target(self, to_add):
         for func in self.targets:
             if func.__name__ == to_add.__name__:
-                raise DecoratorCliException(f"duplicate target names: {func.__name__}")
+                raise FunctionCliException(f"duplicate target names: {func.__name__}")
 
         if to_add.__doc__ is None:
-            raise DecoratorCliException(
+            raise FunctionCliException(
                 "Bake requires doc-strings for target functions (denoted by a triple quoted comment as the first thing in the function body)")
 
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(to_add)
         if len(names) != 0 or defaults is not None:
-            raise DecoratorCliException(
+            raise FunctionCliException(
                 "Bake requires functions with arguments to use exclusively keyword arguments (denoted by a [*] as the first argument to the function)")
         if varargs is not None:
-            raise DecoratorCliException("Bake does not support varargs")
+            raise FunctionCliException("Bake does not support varargs")
         if varkw is not None:
-            raise DecoratorCliException("Bake does not support varargs")
+            raise FunctionCliException("Bake does not support varargs")
         self.targets.append(to_add)
 
     def function_help(self, func, pad: str = "") -> str:  # noqa

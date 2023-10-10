@@ -1,5 +1,5 @@
-import DecoratorCLI
-from DecoratorCLI import cli_function
+import CliFunction
+from CliFunction import cli_function
 
 
 @cli_function
@@ -39,4 +39,4 @@ def migrate_db(*, start_version: int = 0, end_version: int = 3):
 
 
 if __name__ == "__main__":
-    DecoratorCLI.cli()
+    CliFunction.cli()
