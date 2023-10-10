@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "clifunction"
-version = "0.2.0"
+version = "0.2.1"
 authors = [
   { name="Isaak Malers", email="isaak.malers+clifunction@gmail.com" },
 ]

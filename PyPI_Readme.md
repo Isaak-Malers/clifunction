@@ -1,7 +1,6 @@
-# DecoratorCLI
-Enables you to build a CLI with python in the most straightforward way with the fewest lines of code:
+# Enables you to build a CLI with python in the most straightforward way with the fewest lines of code:
 
-turn this:
+# Turn this:
 ```
 from CliFunction import cli_function, cli
 
@@ -17,7 +16,7 @@ if __name__ == "__main__":
     CliFunction.cli()
 ```
 
-into a CLI with documentation like this:
+# Into a CLI with documentation like this:
 
 ```
 C:\Users\isaak\dev\clifunction>python Example.py
@@ -27,7 +26,7 @@ Targets
                 end_version | default:3 | type:<class 'int'>
 ```
 
-That can execute your functions via the CLI including type coercion
+# With easy cli execution and type coercion like this:
 ```
 C:\Users\isaak\dev\clifunction>python Example.py mdb -sv=1 -ev=2
 migrate_data_base:  {'start_version': 1, 'end_version': 2}
