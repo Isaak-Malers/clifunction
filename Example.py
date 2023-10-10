@@ -1,5 +1,4 @@
-import CliFunction
-from CliFunction import cli_function
+from CliFunction import cli_function, cli
 
 
 @cli_function
@@ -31,7 +30,7 @@ def test():
 
 
 @cli_function
-def migrate_db(*, start_version: int = 0, end_version: int = 3):
+def migrate_data_base(*, start_version: int = 0, end_version: int = 3):
     """
     Runs DB migrations.
     """
@@ -39,4 +38,4 @@ def migrate_db(*, start_version: int = 0, end_version: int = 3):
 
 
 if __name__ == "__main__":
-    CliFunction.cli()
+    cli()

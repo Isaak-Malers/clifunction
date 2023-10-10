@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "clifunction"
-version = "0.1.0"
+version = "0.2.0"
 authors = [
   { name="Isaak Malers", email="isaak.malers+clifunction@gmail.com" },
 ]
@@ -18,8 +18,8 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/Isaak-Malers/DecoratorCLI"
-"Bug Tracker" = "https://github.com/Isaak-Malers/DecoratorCLI/issues"
+"Homepage" = "https://github.com/Isaak-Malers/clifunction"
+"Bug Tracker" = "https://github.com/Isaak-Malers/clifunction/issues"
 
 [tool.hatch.build]
 include = ["CliFunction.py"]

@@ -1,29 +1,35 @@
 # DecoratorCLI
 Enables you to build a CLI with python in the most straightforward way with the fewest lines of code:
 
-![Example](docs/Readme-Example.png)
+turn this:
+```
+from CliFunction import cli_function, cli
 
-# Project Goals:
-* Use modern python language features to make invoking python functions from the command line easy.  familiar CLI options like "Man" or "Help" should be populated automatically from type hints and doc strings.
-
-* Do not require an invocation wrapper.  Invoking functions in "myPythonFile.py" should look something like:  ./myPythonFile.py myFunction --myIntArgument=50 -b=True
-
-* Include automatic type coercion based on type hints.  Invoking ./myPythonFile.py myFunction --myIntArgument=50 -b=True should convert 50 to an int, and True to a bool
-
-* Provide defaults, but remain un-opinionated about invocation format.  It should be easy to extend the project to handle other argument formats such as:  ./myPythonFile.py myFunction myIntArgument:50, b:True
-
-* Provide a useful utility to as large a target audience as possible.  This project should be approachable for a sophomore in a non CS related STEM field.  Errors should provide hints as to how to resolve issues.
-
-* Enable complex projects with lots of functions/targets to be well organized.  Target annotations from multiple files should build a nice directory/tree structured organized man/help page, and be addressable by directory or directly if possible, eg:  ./myMainPythonFile.py myImportedModule.mySecondaryFunction --myIntArgument=50 -b=True
-
-* These goals should be implemented with a single "@target" Annotation that takes no arguments.  It should be extremely easy to add to existing code/projects
+@cli_function
+def migrate_data_base(*, start_version: int = 0, end_version: int = 3):
+    """
+    Runs DB migrations.
+    """
+    print(f"Migrating DB from {start_version} to {end_version}")
 
 
-# Stretch Project Goals:
-* Provide Additional arguments to the @target annotation so that common tasks don't require bespoke coding.  These arguments will be "Mixed In" to the documentation and parsing for a particular targeted function
+if __name__ == "__main__":
+    CliFunction.cli()
+```
 
-* Concurrency argument (defaults to 1).  Use the Threading library to spin up as many concurrent invocations of a task as desired.  This would enable easy multi-proccessing
+into a CLI with documentation like this:
 
-* Home Directory Argument.  Make a particular function always run from within a particular path.
+```
+C:\Users\isaak\dev\clifunction>python Example.py
+Targets
+        migrate_data_base -- Runs DB migrations.
+                start_version | default:0 | type:<class 'int'>
+                end_version | default:3 | type:<class 'int'>
+```
 
-* Required Files Argument.  Make a target require a file by moniker (such as "config.json").  And then instead of getting the path to the file just get the string of the file contents instead.
+That can execute your functions via the CLI including type coercion
+```
+C:\Users\isaak\dev\clifunction>python Example.py mdb -sv=1 -ev=2
+migrate_data_base:  {'start_version': 1, 'end_version': 2}
+Migrating DB from 1 to 2
+```
