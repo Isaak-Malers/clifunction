@@ -24,10 +24,10 @@ jobs:
 
       - name: Run pytest
         run: |
-          pytest ./tests
+          pytest ./test
 
       - name: Archive test results
         uses: actions/upload-artifact@v2
         with:
           name: test-results
-          path: ./tests/reports
+          path: ./test/reports
