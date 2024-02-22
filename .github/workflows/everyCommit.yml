@@ -1,4 +1,4 @@
-name: Run on every commit
+name: Run tests on every commit
 
 on:
   push:
@@ -13,4 +13,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Add your build and test steps here
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-dev.txt
+
+      - name: Run pytest
+        run: |
+          pytest ./tests
+
+      - name: Archive test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-results
+          path: ./tests/reports
