@@ -24,7 +24,7 @@ jobs:
 
       - name: Run pytest
         run: |
-          pytest ./test --junitxml=./tests/results.xml
+          pytest ./test --junitxml=./test/results.xml
 
       - name: Archive test results
         uses: actions/upload-artifact@v2
