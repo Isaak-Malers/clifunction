@@ -38,3 +38,6 @@ class TestExecute:
         t.add_target(self.special_address)
         ran = t.execute(args=['CliFunction', 'sa'])
         assert ran is False
+
+    def test_fail(self):
+        assert True is False
