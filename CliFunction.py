@@ -4,14 +4,21 @@ import re
 
 
 class FunctionCliException(Exception):
+    """
+    Common exception type for CliFunction.
+    This ensures it is obvious when a problem occurs with the CLI wrapper vs the code being called into.
+    """
     pass
 
 
 class DefaultArgumentParser:
+    """
+    The default argument parser.  It is possible to create others (for example one that uses argparse) if so desired.
+    """
     def __init__(self):
         pass
 
-    def name_and_abbreviations(self, *, python_name: str) -> [str]:  # noqa
+    def name_and_abbreviations(self, *, python_name: str) -> [str]:
         """
         Given a string name for a python function or method or argument, returns a list with multiple possible matches.
         Examples:
@@ -35,7 +42,7 @@ class DefaultArgumentParser:
         # write
         return sorted(list({python_name, abbreviation.lower()}), key=lambda item: -len(item))
 
-    def type_coercer(self, *, arg: str, desired_type: type):  # noqa
+    def type_coercer(self, *, arg: str, desired_type: type):
 
         if desired_type is str:
             return arg
@@ -79,6 +86,7 @@ class DefaultArgumentParser:
         kwargs_to_return = {}
 
         # Try to build up the kwarg dict.  If anything tries to double add, bail out.
+        # pylint: disable=unused-variable
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(function)
 
         # Check that all args specified have a place to go:
@@ -92,7 +100,7 @@ class DefaultArgumentParser:
             for name in kwonlyargs:
                 if arg_name in self.name_and_abbreviations(python_name=name):
                     if name in kwargs_to_return:
-                        # TODO:  See if we can make this give better errors.
+                        # TO DO:  See if we can make this give better errors.
                         # The function has an ambiguous naming scheme, this should probably error out?
                         return None
 
@@ -123,7 +131,7 @@ class Targets:
 
         self.recursiveTargets: [Targets] = []
 
-    def printer(self, to_print: str):  # noqa
+    def printer(self, to_print: str):
         """
             Note:  This function is only here so that this object is easy to mock/patch for unit tests.
         """
@@ -177,6 +185,7 @@ class Targets:
             raise FunctionCliException(
                 "Bake requires doc-strings for target functions (denoted by a triple quoted comment as the first thing in the function body)")
 
+        # pylint: disable=unused-variable
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(to_add)
         if len(names) != 0 or defaults is not None:
             raise FunctionCliException(
@@ -187,7 +196,7 @@ class Targets:
             raise FunctionCliException("Bake does not support varargs")
         self.targets.append(to_add)
 
-    def function_help(self, func, pad: str = "") -> str:  # noqa
+    def function_help(self, func, pad: str = "") -> str:
         header = f"{pad}{func.__name__} -- {func.__doc__.strip()}"
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(func)
         if kwonlydefaults is None:
