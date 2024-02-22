@@ -1,4 +1,4 @@
-name: Run tests on every commit
+name: automated-tests
 
 on:
   push:
