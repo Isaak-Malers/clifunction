@@ -180,12 +180,18 @@ class Targets:
             return False
 
     def has_target(self, to_add):
+        """
+        Returns true if the current object already has a function named similarly as 'to_add'
+        """
         for function in self.targets:
             if function.__name__ == to_add.__name__:
                 return True
         return False
 
     def add_target(self, to_add):
+        """
+        Tries to add a target to this object.  Fails out if there is a problem or if the target to add isn't sufficiently annotated.
+        """
         for func in self.targets:
             if func.__name__ == to_add.__name__:
                 raise FunctionCliException(f"duplicate target names: {func.__name__}")
@@ -207,6 +213,7 @@ class Targets:
 
     def function_help(self, func, pad: str = "") -> str:
         header = f"{pad}{func.__name__} -- {func.__doc__.strip()}"
+        # pylint: disable=unused-variable
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(func)
         if kwonlydefaults is None:
             kwonlydefaults = {}
