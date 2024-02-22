@@ -1,5 +1,3 @@
-import pytest
-
 from ..CliFunction import DefaultArgumentParser
 
 
@@ -15,7 +13,7 @@ class TestGenerateMethodKwargs:
         return arg
 
     @staticmethod
-    def bool_args(*, arg: bool=False):
+    def bool_args(*, arg: bool = False):
         return arg
 
     @staticmethod
@@ -49,6 +47,7 @@ class TestGenerateMethodKwargs:
         assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=5.4'], function=self.types2) is None
         assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=True'], function=self.types2) is None
         assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=5'], function=self.types2) == {'retries': 5}
+
     def test_shorthands(self):
         assert self.t.generate_method_kwargs(args=['CliFunction', 'bool_args', '-a'], function=self.bool_args) == {"arg": True}
         assert self.t.generate_method_kwargs(args=['CliFunction', 'some_args', '-a=hello'], function=self.some_args) == {"arg": 'hello'}

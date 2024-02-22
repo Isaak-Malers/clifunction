@@ -21,6 +21,7 @@ def noKwargs(myarg, myarg2):
     """But it does have docstrings"""
     pass
 
+
 def camelCase():
     """camel Case"""
     pass

@@ -6,7 +6,6 @@ class TestCanary:
 
     @pytest.mark.skip(reason="This test is a canary for verifying CI works as intended.")
     def test_python_version(self):
-        version = sys.version
         if sys.version.startswith("3.8"):
             assert True is False
 

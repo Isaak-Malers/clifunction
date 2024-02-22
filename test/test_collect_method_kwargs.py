@@ -1,4 +1,4 @@
-from ..CliFunction import DefaultArgumentParser, Targets
+from ..CliFunction import Targets
 
 
 class TestCollectMethodKwargs:
