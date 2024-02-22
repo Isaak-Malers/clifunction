@@ -3,12 +3,20 @@ import sys
 import re
 
 
+"""
+Provides the simplest possible wrapper for exposing python functions to be run on a command line!
+
+Annotate python functions with the [@cli_function] decorator, and annotate the function fully with the builtin python tools.
+
+The library will generate a man page for your file, and provide helpful error messages when arguments are not formatted correctly.
+"""
+
+
 class FunctionCliException(Exception):
     """
     Common exception type for CliFunction.
     This ensures it is obvious when a problem occurs with the CLI wrapper vs the code being called into.
     """
-    pass
 
 
 class DefaultArgumentParser:
@@ -61,6 +69,7 @@ class DefaultArgumentParser:
 
             if desired_type is float:
                 return float(arg)
+        # pylint: disable=broad-exception-caught
         except Exception:  # noqa
             return None  # what a vile pythonic thing to do.
 
