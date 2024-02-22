@@ -8,15 +8,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
@@ -24,10 +27,10 @@ jobs:
 
       - name: Run pytest
         run: |
-          pytest ./test --junitxml=./test/results.xml
+          pytest ./test --junitxml=./test/results-${{ matrix.python-version }}.xml
 
       - name: Archive test results
         uses: actions/upload-artifact@v2
         with:
-          name: test-results
-          path: ./test/results.xml
+          name: test-results-${{ matrix.python-version }}
+          path: ./test/results-${{ matrix.python-version }}.xml
