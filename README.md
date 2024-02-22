@@ -27,6 +27,3 @@ Enables you to build a CLI with python in the most straightforward way with the 
 * Home Directory Argument.  Make a particular function always run from within a particular path.
 
 * Required Files Argument.  Make a target require a file by moniker (such as "config.json").  And then instead of getting the path to the file just get the string of the file contents instead.
-
-# Contribution Tasks:
-Configure GitHub to run all the unit tests on all the major versions of python from 3.8 onward.
