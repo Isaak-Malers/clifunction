@@ -211,6 +211,9 @@ class Targets:
         self.targets.append(to_add)
 
     def function_help(self, func, pad: str = "") -> str:
+        """
+        Given a function, and a "pad" returns the help string for the function, with indentation equal to the padding.
+        """
         header = f"{pad}{func.__name__} -- {func.__doc__.strip()}"
         # pylint: disable=unused-variable
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(func)
@@ -225,6 +228,9 @@ class Targets:
         return header + f"\n\t{pad}" + args_string
 
     def man(self, pad: str = ""):
+        """
+        Returns the manuel for this instance of a Cli Function object.  Padding allows for indenting recursively nested CLI function objects.
+        """
         header = f"{pad}{self.headingName}"
         function_docs = []
         for func in self.targets:
@@ -237,11 +243,18 @@ targets = Targets()
 
 
 def cli_function(target_to_add):
+    """
+    Decorates a function, and at import time registers that function with the CLI tool.
+    This allows the cli function to know what functions are available and should be exposed.
+    """
     targets.add_target(target_to_add)
     return target_to_add
 
 
 def cli(args: [str] = None):
+    """
+    Runs the CLI tool for the current file
+    """
     if args is None:
         args = sys.argv
 
