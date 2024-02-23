@@ -58,7 +58,7 @@ class DefaultArgumentParser:
         if desired_type is bool:
             if arg.lower() in ['true', 't', 'y', 'yes']:
                 return True
-            elif arg.lower() in ['false', 'f', 'n', 'no']:
+            if arg.lower() in ['false', 'f', 'n', 'no']:
                 return False
             else:
                 return None
@@ -73,8 +73,7 @@ class DefaultArgumentParser:
         except Exception:  # noqa
             return None  # what a vile pythonic thing to do.
 
-        else:
-            return None
+        return None
 
     def generate_method_kwargs(self, *, args: [str], function) -> dict:
         """
