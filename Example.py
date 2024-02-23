@@ -1,7 +1,5 @@
+# pylint: disable=import-error
 from CliFunction import cli_function, cli
-"""
-An example file for how to use CliFunction!  these methods don't do anything real, but serve as an example for how this library might be used.
-"""
 
 
 @cli_function

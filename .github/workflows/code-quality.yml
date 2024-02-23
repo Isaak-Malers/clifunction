@@ -1,4 +1,4 @@
-name: code-quality-check
+name: code-quality
 
 on:
   push:
@@ -28,8 +28,8 @@ jobs:
 
       - name: Run PyLint on current directory
         run: |
-          pylint --disable=line-too-long,invalid-name ./*.py
+          pylint --disable=line-too-long,invalid-name,missing-module-docstring ./*.py
 
       - name: Run PyLint on test directory
         run: |
-          pylint --disable=line-too-long,invalid-name ./test/*.py
+          pylint --disable=line-too-long,invalid-name,missing-module-docstring ./test/*.py

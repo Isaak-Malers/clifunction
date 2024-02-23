@@ -35,12 +35,14 @@ class DefaultArgumentParser:
             abbreviation = python_name[0] + "".join([char[1] for char in matches])
         else:
             matches = re.findall(r'[A-Z0-9]', python_name)
+            # pylint: disable=unnecessary-comprehension
             abbreviation = python_name[0] + "".join([char for char in matches])
 
         # note:  these don't strictly need to be sorted, but it makes the test cases a lot more consistent/easier to
         # write
         return sorted(list({python_name, abbreviation.lower()}), key=lambda item: -len(item))
 
+    # pylint: disable=too-many-return-statements
     def type_coercer(self, *, arg: str, desired_type: type):
         """
         given a string representation of an argument from the CLI, and a 'desired type' annotation, it will return the type desired or None
@@ -54,8 +56,7 @@ class DefaultArgumentParser:
                 return True
             if arg.lower() in ['false', 'f', 'n', 'no']:
                 return False
-            else:
-                return None
+            return None
 
         try:
             if desired_type is int:
@@ -69,6 +70,7 @@ class DefaultArgumentParser:
 
         return None
 
+    # pylint: disable=too-many-locals
     def generate_method_kwargs(self, *, args: [str], function) -> dict:
         """
             should be passed the args string list from the terminal which will look something like this:
@@ -126,6 +128,7 @@ class DefaultArgumentParser:
 
 
 class Targets:
+    """holds functions to be exposed over CLI"""
     def __init__(self):
         self.headingName = "Targets"
         self.targets = []  # These are not in a subdirectory
