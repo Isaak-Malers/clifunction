@@ -1,5 +1,3 @@
-import pytest
-
 from ..CliFunction import Targets
 
 

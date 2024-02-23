@@ -1,3 +1,4 @@
+# pylint: disable=import-error
 from CliFunction import cli_function, cli
 
 

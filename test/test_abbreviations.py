@@ -1,5 +1,6 @@
 from ..CliFunction import DefaultArgumentParser
 
+
 class TestAbbreviations:
 
     parser = DefaultArgumentParser()

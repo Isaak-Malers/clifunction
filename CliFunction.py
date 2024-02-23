@@ -4,14 +4,20 @@ import re
 
 
 class FunctionCliException(Exception):
-    pass
+    """
+    Common exception type for CliFunction.
+    This ensures it is obvious when a problem occurs with the CLI wrapper vs the code being called into.
+    """
 
 
 class DefaultArgumentParser:
+    """
+    The default argument parser.  It is possible to create others (for example one that uses argparse) if so desired.
+    """
     def __init__(self):
         pass
 
-    def name_and_abbreviations(self, *, python_name: str) -> [str]:  # noqa
+    def name_and_abbreviations(self, *, python_name: str) -> [str]:
         """
         Given a string name for a python function or method or argument, returns a list with multiple possible matches.
         Examples:
@@ -29,24 +35,28 @@ class DefaultArgumentParser:
             abbreviation = python_name[0] + "".join([char[1] for char in matches])
         else:
             matches = re.findall(r'[A-Z0-9]', python_name)
+            # pylint: disable=unnecessary-comprehension
             abbreviation = python_name[0] + "".join([char for char in matches])
 
         # note:  these don't strictly need to be sorted, but it makes the test cases a lot more consistent/easier to
         # write
         return sorted(list({python_name, abbreviation.lower()}), key=lambda item: -len(item))
 
-    def type_coercer(self, *, arg: str, desired_type: type):  # noqa
-
+    # pylint: disable=too-many-return-statements
+    def type_coercer(self, *, arg: str, desired_type: type):
+        """
+        given a string representation of an argument from the CLI, and a 'desired type' annotation, it will return the type desired or None
+        Note that there are only a limited number of types supported.
+        """
         if desired_type is str:
             return arg
 
         if desired_type is bool:
             if arg.lower() in ['true', 't', 'y', 'yes']:
                 return True
-            elif arg.lower() in ['false', 'f', 'n', 'no']:
+            if arg.lower() in ['false', 'f', 'n', 'no']:
                 return False
-            else:
-                return None
+            return None
 
         try:
             if desired_type is int:
@@ -54,12 +64,13 @@ class DefaultArgumentParser:
 
             if desired_type is float:
                 return float(arg)
+        # pylint: disable=broad-exception-caught
         except Exception:  # noqa
             return None  # what a vile pythonic thing to do.
 
-        else:
-            return None
+        return None
 
+    # pylint: disable=too-many-locals
     def generate_method_kwargs(self, *, args: [str], function) -> dict:
         """
             should be passed the args string list from the terminal which will look something like this:
@@ -79,6 +90,7 @@ class DefaultArgumentParser:
         kwargs_to_return = {}
 
         # Try to build up the kwarg dict.  If anything tries to double add, bail out.
+        # pylint: disable=unused-variable
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(function)
 
         # Check that all args specified have a place to go:
@@ -92,13 +104,14 @@ class DefaultArgumentParser:
             for name in kwonlyargs:
                 if arg_name in self.name_and_abbreviations(python_name=name):
                     if name in kwargs_to_return:
-                        # TODO:  See if we can make this give better errors.
+                        # TO DO:  See if we can make this give better errors.
                         # The function has an ambiguous naming scheme, this should probably error out?
                         return None
 
                     # Note:  This means that the user didn't specify a value, so we treated it as a flag.
                     # If this method doesn't allow for a bool on that argument, we cannot match and should return none
                     if arg_value is True:
+                        # pylint: disable=unidiomatic-typecheck
                         if type(True) is not annotations[name]:
                             return None
                         kwargs_to_return[name] = arg_value
@@ -116,6 +129,7 @@ class DefaultArgumentParser:
 
 
 class Targets:
+    """holds functions to be exposed over CLI"""
     def __init__(self):
         self.headingName = "Targets"
         self.targets = []  # These are not in a subdirectory
@@ -123,7 +137,7 @@ class Targets:
 
         self.recursiveTargets: [Targets] = []
 
-    def printer(self, to_print: str):  # noqa
+    def printer(self, to_print: str):
         """
             Note:  This function is only here so that this object is easy to mock/patch for unit tests.
         """
@@ -161,14 +175,21 @@ class Targets:
             for key, value in run_candidates.items():
                 self.printer(f"{key.__name__}:  {value}")
             return False
+        return False
 
     def has_target(self, to_add):
+        """
+        Returns true if the current object already has a function named similarly as 'to_add'
+        """
         for function in self.targets:
             if function.__name__ == to_add.__name__:
                 return True
         return False
 
     def add_target(self, to_add):
+        """
+        Tries to add a target to this object.  Fails out if there is a problem or if the target to add isn't sufficiently annotated.
+        """
         for func in self.targets:
             if func.__name__ == to_add.__name__:
                 raise FunctionCliException(f"duplicate target names: {func.__name__}")
@@ -177,6 +198,7 @@ class Targets:
             raise FunctionCliException(
                 "Bake requires doc-strings for target functions (denoted by a triple quoted comment as the first thing in the function body)")
 
+        # pylint: disable=unused-variable
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(to_add)
         if len(names) != 0 or defaults is not None:
             raise FunctionCliException(
@@ -187,8 +209,12 @@ class Targets:
             raise FunctionCliException("Bake does not support varargs")
         self.targets.append(to_add)
 
-    def function_help(self, func, pad: str = "") -> str:  # noqa
+    def function_help(self, func, pad: str = "") -> str:
+        """
+        Given a function, and a "pad" returns the help string for the function, with indentation equal to the padding.
+        """
         header = f"{pad}{func.__name__} -- {func.__doc__.strip()}"
+        # pylint: disable=unused-variable
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(func)
         if kwonlydefaults is None:
             kwonlydefaults = {}
@@ -201,6 +227,9 @@ class Targets:
         return header + f"\n\t{pad}" + args_string
 
     def man(self, pad: str = ""):
+        """
+        Returns the manuel for this instance of a Cli Function object.  Padding allows for indenting recursively nested CLI function objects.
+        """
         header = f"{pad}{self.headingName}"
         function_docs = []
         for func in self.targets:
@@ -213,11 +242,18 @@ targets = Targets()
 
 
 def cli_function(target_to_add):
+    """
+    Decorates a function, and at import time registers that function with the CLI tool.
+    This allows the cli function to know what functions are available and should be exposed.
+    """
     targets.add_target(target_to_add)
     return target_to_add
 
 
 def cli(args: [str] = None):
+    """
+    Runs the CLI tool for the current file
+    """
     if args is None:
         args = sys.argv
 

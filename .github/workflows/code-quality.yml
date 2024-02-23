@@ -1,0 +1,35 @@
+name: code-quality
+
+on:
+  push:
+    branches:
+      - '*'
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install Flake8 and PyLint
+        run: |
+          pip install flake8 pylint
+
+      - name: Run Flake8
+        run: |
+          flake8 .
+
+      - name: Run PyLint on current directory
+        run: |
+          pylint --disable=line-too-long,invalid-name,missing-module-docstring ./*.py
+
+      - name: Run PyLint on test directory
+        run: |
+          pylint --disable=line-too-long,invalid-name,missing-module-docstring,import-error,missing-class-docstring,comparison-of-constants,missing-function-docstring,too-few-public-methods,R0801 ./test/*.py

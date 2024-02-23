@@ -1,5 +1,3 @@
-import pytest
-
 from ..CliFunction import DefaultArgumentParser
 
 
@@ -15,22 +13,28 @@ class TestGenerateMethodKwargs:
         return arg
 
     @staticmethod
-    def bool_args(*, arg: bool=False):
+    def bool_args(*, arg: bool = False):
         return arg
 
     @staticmethod
+    # pylint: disable=too-many-arguments
+    # pylint: disable=unused-argument
     def complex_method(*, arg1: str, arg2: str, arg3: str, arg4: str, arg5: str, arg6: str, arg7: str, arg8: str, arg9: str):
         return "wtf"
 
     @staticmethod
+    # pylint: disable=too-many-arguments
+    # pylint: disable=unused-argument
     def types(*, st: str, bo: bool, inn: int, fl: float):
         return "yay types"
 
     @staticmethod
+    # pylint: disable=unused-argument
     def types2(*, retries: int):
         return "moreTests"
 
     @staticmethod
+    # pylint: disable=unused-argument
     def bad_shorthands(*, url: str, unicode: bool):
         """These both have the same abbreviation"""
         return "bad"
@@ -49,6 +53,7 @@ class TestGenerateMethodKwargs:
         assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=5.4'], function=self.types2) is None
         assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=True'], function=self.types2) is None
         assert self.t.generate_method_kwargs(args=['d.py', 'types2', '--retries=5'], function=self.types2) == {'retries': 5}
+
     def test_shorthands(self):
         assert self.t.generate_method_kwargs(args=['CliFunction', 'bool_args', '-a'], function=self.bool_args) == {"arg": True}
         assert self.t.generate_method_kwargs(args=['CliFunction', 'some_args', '-a=hello'], function=self.some_args) == {"arg": 'hello'}
