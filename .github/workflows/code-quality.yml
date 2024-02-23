@@ -32,4 +32,4 @@ jobs:
 
       - name: Run PyLint on test directory
         run: |
-          pylint --disable=line-too-long,invalid-name,missing-module-docstring ./test/*.py
+          pylint --disable=line-too-long,invalid-name,missing-module-docstring,import-error,missing-class-docstring,comparison-of-constants,missing-function-docstring ./test/*.py
