@@ -5,12 +5,10 @@ from ..CliFunction import Targets, FunctionCliException
 
 def one():
     """one"""
-    pass
 
 
 def two():
     """two"""
-    pass
 
 
 def noDocstring():
@@ -19,17 +17,14 @@ def noDocstring():
 
 def noKwargs(myarg, myarg2):
     """But it does have docstrings"""
-    pass
 
 
 def camelCase():
     """camel Case"""
-    pass
 
 
 def snake_case():
     """snake_case"""
-    pass
 
 
 class TestInvalidTargets:

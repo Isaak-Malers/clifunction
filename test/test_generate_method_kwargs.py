@@ -17,10 +17,14 @@ class TestGenerateMethodKwargs:
         return arg
 
     @staticmethod
+    # pylint: disable=too-many-arguments
+    # pylint: disable=unused-argument
     def complex_method(*, arg1: str, arg2: str, arg3: str, arg4: str, arg5: str, arg6: str, arg7: str, arg8: str, arg9: str):
         return "wtf"
 
     @staticmethod
+    # pylint: disable=too-many-arguments
+    # pylint: disable=unused-argument
     def types(*, st: str, bo: bool, inn: int, fl: float):
         return "yay types"
 
