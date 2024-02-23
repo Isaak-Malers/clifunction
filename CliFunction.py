@@ -1,13 +1,9 @@
 import inspect
 import sys
 import re
-
-
 """
 Provides the simplest possible wrapper for exposing python functions to be run on a command line!
-
 Annotate python functions with the [@cli_function] decorator, and annotate the function fully with the builtin python tools.
-
 The library will generate a man page for your file, and provide helpful error messages when arguments are not formatted correctly.
 """
 
@@ -51,7 +47,10 @@ class DefaultArgumentParser:
         return sorted(list({python_name, abbreviation.lower()}), key=lambda item: -len(item))
 
     def type_coercer(self, *, arg: str, desired_type: type):
-
+        """
+        given a string representation of an argument from the CLI, and a 'desired type' annotation, it will return the type desired or None
+        Note that there are only a limited number of types supported.
+        """
         if desired_type is str:
             return arg
 
