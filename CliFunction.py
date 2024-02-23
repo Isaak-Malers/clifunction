@@ -111,6 +111,7 @@ class DefaultArgumentParser:
                     # Note:  This means that the user didn't specify a value, so we treated it as a flag.
                     # If this method doesn't allow for a bool on that argument, we cannot match and should return none
                     if arg_value is True:
+                        # pylint: disable=unidiomatic-typecheck
                         if type(True) is not annotations[name]:
                             return None
                         kwargs_to_return[name] = arg_value
@@ -174,6 +175,7 @@ class Targets:
             for key, value in run_candidates.items():
                 self.printer(f"{key.__name__}:  {value}")
             return False
+        return False
 
     def has_target(self, to_add):
         """
