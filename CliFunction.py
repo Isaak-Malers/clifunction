@@ -1,4 +1,5 @@
 import inspect
+import os
 import sys
 import re
 
@@ -131,7 +132,7 @@ class DefaultArgumentParser:
 class Targets:
     """holds functions to be exposed over CLI"""
     def __init__(self):
-        self.headingName = "Targets"
+        self.headingName = os.path.basename(sys.argv[0])
         self.targets = []  # These are not in a subdirectory
         self.parser = DefaultArgumentParser()
 
