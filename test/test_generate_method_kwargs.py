@@ -29,10 +29,12 @@ class TestGenerateMethodKwargs:
         return "yay types"
 
     @staticmethod
+    # pylint: disable=unused-argument
     def types2(*, retries: int):
         return "moreTests"
 
     @staticmethod
+    # pylint: disable=unused-argument
     def bad_shorthands(*, url: str, unicode: bool):
         """These both have the same abbreviation"""
         return "bad"

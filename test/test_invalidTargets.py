@@ -15,6 +15,7 @@ def noDocstring():
     pass
 
 
+# pylint: disable=unused-argument
 def noKwargs(myarg, myarg2):
     """But it does have docstrings"""
 
