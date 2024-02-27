@@ -22,9 +22,24 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Build job
-  # TODO:  run this command to build the docs, for now I am running it locally before checking in:
-  # mkdocs build -s -d ./_site -v
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install Mkdocs
+        run: |
+          pip install mkdocs
+
+      - name: Run Mkdocs Build
+        run: | 
+          mkdocs build -s -d ./_site -v
 
   # Deployment job
   deploy:
