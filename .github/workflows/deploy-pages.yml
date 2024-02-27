@@ -41,6 +41,12 @@ jobs:
         run: | 
           mkdocs build -s -d ./_site -v
 
+      - name: Archive site as artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: github-pages
+          path: ./_site
+
   # Deployment job
   deploy:
     environment:
