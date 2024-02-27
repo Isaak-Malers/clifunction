@@ -4,7 +4,7 @@
 
 clifunction makes building and maintaining command line utilities easier than ever by using the annotations included in modern python versions, Here is a quick look:
 
-![Easily expose python functions to the command line](./Example.png)
+![Example Usage](./Example.png)
 
 
 ### Getting Started
@@ -27,7 +27,7 @@ migrate_data_base:  {}
 Migrating DB from 0 to 3
 ```
 
-3. Call your functions by abbreviated names, and handle pythons builtin types:
+3. Call your functions by auto-generated alias's, and handle Pythons built-in types:
 ```commandline
 isaak@laptop:/mnt/c/Users/isaak/dev/clifunction$ python3 Example.py mdb -sv=4 --end_version=5
 migrate_data_base:  {'start_version': 4, 'end_version': 5}
