@@ -1,3 +1,7 @@
+[![automated-tests](https://github.com/Isaak-Malers/clifunction/actions/workflows/automated-tests.yml/badge.svg)](https://github.com/Isaak-Malers/clifunction/actions/workflows/automated-tests.yml)
+[![code-quality](https://github.com/Isaak-Malers/clifunction/actions/workflows/code-quality.yml/badge.svg)](https://github.com/Isaak-Malers/clifunction/actions/workflows/code-quality.yml)
+[![deploy-pages](https://github.com/Isaak-Malers/clifunction/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/Isaak-Malers/clifunction/actions/workflows/deploy-pages.yml)
+[![publish-package](https://github.com/Isaak-Malers/clifunction/actions/workflows/publish-package.yml/badge.svg)](https://github.com/Isaak-Malers/clifunction/actions/workflows/publish-package.yml)
 # DecoratorCLI
 Enables you to build a CLI with python in the most straightforward way with the fewest lines of code:
 
