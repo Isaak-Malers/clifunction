@@ -1,6 +1,6 @@
 import pytest
 
-from ..CliFunction import Targets, FunctionCliException
+from ..CliFunction import Targets, CliFunctionException
 
 
 def one():
@@ -33,10 +33,10 @@ class TestInvalidTargets:
         t = Targets()
         with pytest.raises(Exception) as e:
             t.add_target(noDocstring)
-        assert e.type == FunctionCliException
+        assert e.type == CliFunctionException
 
     def test_no_kwargs_only(self):
         t = Targets()
         with pytest.raises(Exception) as e:
             t.add_target(noKwargs)
-        assert e.type == FunctionCliException
+        assert e.type == CliFunctionException

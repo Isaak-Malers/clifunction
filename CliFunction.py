@@ -4,7 +4,7 @@ import sys
 import re
 
 
-class FunctionCliException(Exception):
+class CliFunctionException(Exception):
     """
     Common exception type for CliFunction.
     This ensures it is obvious when a problem occurs with the CLI wrapper vs the code being called into.
@@ -193,21 +193,21 @@ class Targets:
         """
         for func in self.targets:
             if func.__name__ == to_add.__name__:
-                raise FunctionCliException(f"duplicate target names: {func.__name__}")
+                raise CliFunctionException(f"duplicate target names: {func.__name__}")
 
         if to_add.__doc__ is None:
-            raise FunctionCliException(
+            raise CliFunctionException(
                 "Bake requires doc-strings for target functions (denoted by a triple quoted comment as the first thing in the function body)")
 
         # pylint: disable=unused-variable
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(to_add)
         if len(names) != 0 or defaults is not None:
-            raise FunctionCliException(
+            raise CliFunctionException(
                 "Bake requires functions with arguments to use exclusively keyword arguments (denoted by a [*] as the first argument to the function)")
         if varargs is not None:
-            raise FunctionCliException("Bake does not support varargs")
+            raise CliFunctionException("Bake does not support varargs")
         if varkw is not None:
-            raise FunctionCliException("Bake does not support varargs")
+            raise CliFunctionException("Bake does not support varargs")
         self.targets.append(to_add)
 
     def function_help(self, func, pad: str = "") -> str:
