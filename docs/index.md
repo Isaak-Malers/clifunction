@@ -4,7 +4,21 @@
 
 clifunction makes building and maintaining command line utilities easier than ever by using the annotations included in modern python versions, Here is a quick look:
 
-![Example Usage](./Example.png)
+How your code looks:
+```python
+@cli_function
+def migrate_data_base(*, start_version: int = 0, end_version: int = 3):
+    """
+    Runs DB migrations.
+    """
+    print(f"Migrating DB from {start_version} to {end_version}")
+```
+How you invoke that function:
+```commandline
+isaak@laptop:/mnt/c/Users/isaak/dev/clifunction$ python3 Example.py migrate_data_base
+migrate_data_base:  {}
+Migrating DB from 0 to 3
+```
 
 
 ### Getting Started
