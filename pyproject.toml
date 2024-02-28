@@ -4,12 +4,12 @@ build-backend = "hatchling.build"
 
 [project]
 name = "clifunction"
-version = "0.2.1"
+version = "0.2.2"
 authors = [
   { name="Isaak Malers", email="isaak.malers+clifunction@gmail.com" },
 ]
 description = "Build a fully featured CLI for your python project with minium effort"
-readme = "PyPI_Readme.md"
+readme = "docs/Example.md"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -20,11 +20,14 @@ classifiers = [
 [project.urls]
 "Homepage" = "https://github.com/Isaak-Malers/clifunction"
 "Bug Tracker" = "https://github.com/Isaak-Malers/clifunction/issues"
+"Documentation" = "https://isaak-malers.github.io/clifunction/"
+
 
 [tool.hatch.build]
 include = ["CliFunction.py"]
 exclude = [
     "Example.py",
     "/docs",
-    "/test"
+    "/test",
+    "/_site"
 ]

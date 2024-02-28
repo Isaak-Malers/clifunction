@@ -1,4 +1,4 @@
-name: Deploy to PyPI
+name: publish-package
 
 on:
   push:
@@ -25,3 +25,4 @@ jobs:
       - name: Build and publish
         run: |
           python -m build
+          python -m twine upload -u __token__ -p ${{ secrets.PYPI_ACCESS_TOKEN }} dist/*
