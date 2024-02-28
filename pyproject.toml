@@ -9,7 +9,7 @@ authors = [
   { name="Isaak Malers", email="isaak.malers+clifunction@gmail.com" },
 ]
 description = "Build a fully featured CLI for your python project with minium effort"
-readme = "docs/Example.md"
+readme = "./docs/index.md"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Python :: 3",
