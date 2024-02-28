@@ -75,7 +75,7 @@ class DefaultArgumentParser:
     def generate_method_kwargs(self, *, args: [str], function) -> dict:
         """
             should be passed the args string list from the terminal which will look something like this:
-            ['FunctionCLI.py', 'two', '--arg1=5']
+            ['CliFunction.py', 'two', '--arg1=5']
             and a function which may or may not be invoke-able given the information in the args string list.
 
             if the function cannot be invoked from the given arguments, return None
@@ -193,21 +193,21 @@ class Targets:
         """
         for func in self.targets:
             if func.__name__ == to_add.__name__:
-                raise CliFunctionException(f"duplicate target names: {func.__name__}")
+                raise CliFunctionException(f"duplicate function names: {func.__name__}")
 
         if to_add.__doc__ is None:
             raise CliFunctionException(
-                "Bake requires doc-strings for target functions (denoted by a triple quoted comment as the first thing in the function body)")
+                "CliFunction requires doc-strings for exposed functions (denoted by a triple quoted comment as the first thing in the function body)")
 
         # pylint: disable=unused-variable
         names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(to_add)
         if len(names) != 0 or defaults is not None:
             raise CliFunctionException(
-                "Bake requires functions with arguments to use exclusively keyword arguments (denoted by a [*] as the first argument to the function)")
+                "CliFunction requires functions with arguments to use exclusively keyword arguments (denoted by a [*] as the first argument to the function)")
         if varargs is not None:
-            raise CliFunctionException("Bake does not support varargs")
+            raise CliFunctionException("CliFunction does not support varargs")
         if varkw is not None:
-            raise CliFunctionException("Bake does not support varargs")
+            raise CliFunctionException("CliFunction does not support varargs")
         self.targets.append(to_add)
 
     def function_help(self, func, pad: str = "") -> str:
