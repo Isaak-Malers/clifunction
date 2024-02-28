@@ -1,4 +1,3 @@
-# Sample workflow for building and deploying a Jekyll site to GitHub Pages
 name: deploy-pages
 
 on:
@@ -55,6 +54,15 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: github-pages
+          path: _site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_dir: _site
