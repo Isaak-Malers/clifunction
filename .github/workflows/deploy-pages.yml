@@ -21,48 +21,35 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-
-      - name: Install Mkdocs
-        run: |
-          pip install mkdocs
-
-      - name: Run Mkdocs Build
-        run: | 
-          mkdocs build -s -d ./_site -v
-
-      - name: Archive site as artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: github-pages
-          path: ./_site
-
-  # Deployment job
+  # Single deploy job since we're just deploying
   deploy:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    needs: build
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v2
         with:
-          name: github-pages
-          path: _site
+          python-version: '3.x'
+      - name: Install Mkdocs
+        run: |
+          pip install mkdocs
 
+      - name: Run Mkdocs Build
+        run: |
+          mkdocs build -s -d ./_site -v
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Upload _site folder.
+          path: './_site'
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/upload-pages-artifact@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          source_dir: _site
+        uses: actions/deploy-pages@v4
