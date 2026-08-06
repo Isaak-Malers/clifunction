@@ -22,6 +22,12 @@ __all__ = [
 
 targets = Targets()
 
+# Exit codes, distinguished so a caller (human or agent) can branch on failure *kind* without
+# parsing stdout text.  0 is success (implicit -- plain return / no SystemExit raised).
+EXIT_NO_ARGS = 1
+EXIT_NO_MATCH = 2
+EXIT_AMBIGUOUS_MATCH = 3
+
 
 def cli_function(target_to_add):
     """
@@ -41,7 +47,7 @@ def cli(args: list[str] | None = None):
 
     if len(args) < 2:
         print(targets.man())
-        raise SystemExit(1)
+        raise SystemExit(EXIT_NO_ARGS)
 
     # Reserved, not routed through the normal target-matching machinery: "--schema" can never
     # collide with a real target name/abbreviation, since name_and_abbreviations never produces
@@ -52,4 +58,8 @@ def cli(args: list[str] | None = None):
 
     if not targets.execute(args=args):
         print(targets.man())
-        raise SystemExit(1)
+        # execute() already ran the same match-collection internally; re-deriving the count
+        # here (rather than changing execute()'s bool return contract) only happens on the
+        # failure path, so the common (successful) path pays nothing extra for it.
+        match_count = len(targets.collect_method_kwargs(args=args))
+        raise SystemExit(EXIT_NO_MATCH if match_count == 0 else EXIT_AMBIGUOUS_MATCH)

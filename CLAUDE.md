@@ -93,7 +93,10 @@ check this list before assuming something is or isn't done yet:
       with zero path hacks.
 - [x] `--schema` JSON introspection output (`Targets.schema()`, wired into `cli()` as a reserved
       flag that can't collide with a real target name/abbreviation).
-- [ ] Differentiated exit codes.
+- [x] Differentiated exit codes: `1`=no args, `2`=no match, `3`=ambiguous match, `0`=success
+      (`clifunction.EXIT_NO_ARGS`/`EXIT_NO_MATCH`/`EXIT_AMBIGUOUS_MATCH`). "Target itself raised"
+      deliberately left as Python's normal uncaught-exception behavior — see the `usability-audit`
+      skill for why.
 - Not scheduled yet (per the proposal, evaluate only after the above are shipped and in use):
   extended type coercion (`Path`, `Enum`, `Optional[T]`).
 
