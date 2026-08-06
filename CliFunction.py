@@ -126,6 +126,14 @@ class DefaultArgumentParser:
             if added is False:
                 return None
 
+        # A candidate that's missing a required (no-default) kwonly arg cannot actually be
+        # invoked -- it isn't a match, it's a crash waiting to happen.  Treat it the same as
+        # any other non-match rather than letting the caller hit the wrapped function's own
+        # TypeError.
+        required = [name for name in kwonlyargs if not kwonlydefaults or name not in kwonlydefaults]
+        if any(name not in kwargs_to_return for name in required):
+            return None
+
         return kwargs_to_return
 
 
