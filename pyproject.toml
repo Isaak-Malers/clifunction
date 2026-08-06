@@ -36,6 +36,7 @@ exclude = [
 dev = [
     "flake8>=5.0.4",
     "mkdocs>=1.6.1",
+    "mypy>=1.14.1",
     "pylint>=3.2.7",
     "pytest>=8.3.5",
 ]

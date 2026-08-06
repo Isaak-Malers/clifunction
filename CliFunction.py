@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import inspect
 import os
 import sys
@@ -18,7 +20,7 @@ class DefaultArgumentParser:
     def __init__(self):
         pass
 
-    def name_and_abbreviations(self, *, python_name: str) -> [str]:
+    def name_and_abbreviations(self, *, python_name: str) -> list[str]:
         """
         Given a string name for a python function or method or argument, returns a list with multiple possible matches.
         Examples:
@@ -72,7 +74,7 @@ class DefaultArgumentParser:
         return None
 
     # pylint: disable=too-many-locals
-    def generate_method_kwargs(self, *, args: [str], function) -> dict:
+    def generate_method_kwargs(self, *, args: list[str], function) -> dict | None:
         """
             should be passed the args string list from the terminal which will look something like this:
             ['CliFunction.py', 'two', '--arg1=5']
@@ -97,7 +99,7 @@ class DefaultArgumentParser:
         # Check that all args specified have a place to go:
         for arg in args[2:]:
             arg_name = arg.split("=")[0].replace("-", "")
-            arg_value = True
+            arg_value: str | bool = True
             if len(arg.split("=")) == 2:
                 arg_value = arg.split("=")[1]
 
@@ -111,7 +113,7 @@ class DefaultArgumentParser:
 
                     # Note:  This means that the user didn't specify a value, so we treated it as a flag.
                     # If this method doesn't allow for a bool on that argument, we cannot match and should return none
-                    if arg_value is True:
+                    if isinstance(arg_value, bool):
                         # pylint: disable=unidiomatic-typecheck
                         if type(True) is not annotations[name]:
                             return None
@@ -150,7 +152,7 @@ class Targets:
         """
         print(to_print)
 
-    def collect_method_kwargs(self, *, args: [str]) -> dict:
+    def collect_method_kwargs(self, *, args: list[str]) -> dict:
         """
         Generates a dict with keys of functions, and values of kwargs that potentially match.
         """
@@ -162,7 +164,7 @@ class Targets:
                 to_return[t] = candidate
         return to_return
 
-    def execute(self, *, args: [str]) -> bool:
+    def execute(self, *, args: list[str]) -> bool:
         """Given some args, attempts to execute the function, returns false if it fails to execute a function"""
         run_candidates = self.collect_method_kwargs(args=args)
 
@@ -257,7 +259,7 @@ def cli_function(target_to_add):
     return target_to_add
 
 
-def cli(args: [str] = None):
+def cli(args: list[str] | None = None):
     """
     Runs the CLI tool for the current file
     """

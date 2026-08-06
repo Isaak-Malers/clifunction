@@ -39,9 +39,10 @@ resolvable. A major-version proposal to collapse this exists — see `docs/major
 # tests (relative imports in test/*.py require running from repo root)
 uv run pytest ./test -v          # or: pytest ./test -v inside a venv with pytest installed
 
-# lint (both must be clean before anything merges — CI enforces this)
+# lint + types (all three must be clean before anything merges — CI enforces this)
 uv run flake8 .
 uv run pylint --disable=line-too-long,invalid-name,missing-module-docstring ./*.py
+uv run mypy CliFunction.py
 
 # build
 uv build                          # or: python -m build
@@ -70,9 +71,19 @@ not a hypothetical — see the `version-validation` skill before anything that c
 - `version-validation` — pre-publish gate given the auto-publish-on-push CI above.
 - `uv-setup` — what `uv` support means for a library (not an app) and what's already wired up.
 
-## Known gaps (found during exploration, not yet fixed)
+## In progress: major-version-rev (see `docs/major-version-rev-proposal.md`)
 
-- Missing required keyword-only args are not validated before the call — the wrapped function's
-  own `TypeError` leaks through as a raw traceback instead of a clean CLI error. See
-  `usability-audit` skill and the proposal doc.
-- No runtime deps, and that's load-bearing — see `maintainer-taste`.
+Working branch: `im/ver-1.0.0-prep`. Implementation status of the proposal's sequencing plan —
+check this list before assuming something is or isn't done yet:
+
+- [x] Missing required kwonly args are now treated as no-match instead of leaking a raw `TypeError`.
+- [x] Dead `recursiveTargets` scaffolding removed.
+- [x] Type annotations fixed (`list[str]`, `dict | None`, etc. via `from __future__ import
+      annotations` — floor stays `>=3.8`); `mypy` added to `code-quality.yml`.
+- [ ] Package restructure `CliFunction.py` → `clifunction/` package, version bump to `1.0.0`.
+- [ ] `--schema` JSON introspection output.
+- [ ] Differentiated exit codes.
+- Not scheduled yet (per the proposal, evaluate only after the above are shipped and in use):
+  extended type coercion (`Path`, `Enum`, `Optional[T]`).
+
+No runtime deps, and that's load-bearing — see `maintainer-taste`.

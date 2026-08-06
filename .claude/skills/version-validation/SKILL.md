@@ -27,13 +27,17 @@ preventative local check. This skill is that preventative check, run before the 
    note the gap explicitly rather than asserting confidence you don't have. As of this check,
    the matrix does not include 3.13/3.14 even though `requires-python = ">=3.8"` has no upper
    bound — flag this mismatch if a change specifically depends on 3.13+ behavior.
-2. **Lint is clean, exactly as CI invokes it** (both must exit 0, don't approximate with a
-   subset):
+2. **Lint and type-check are clean, exactly as CI invokes them** (all three must exit 0, don't
+   approximate with a subset):
    ```bash
    flake8 .
    pylint --disable=line-too-long,invalid-name,missing-module-docstring ./*.py
    pylint --disable=line-too-long,invalid-name,missing-module-docstring,import-error,missing-class-docstring,comparison-of-constants,missing-function-docstring,too-few-public-methods,R0801 ./test/*.py
+   mypy CliFunction.py
    ```
+   (`mypy` was added to `code-quality.yml` alongside flake8/pylint — it catches things they
+   don't, e.g. it originally found 11 real errors from invalid `[str]`-literal annotations and
+   `-> dict` signatures that actually returned `None` on failure paths.)
 3. **Build succeeds and ships what you think it ships.** `python -m build` or `uv build`, then
    actually open the wheel (`unzip -l dist/*.whl`) and confirm the file list matches
    `[tool.hatch.build] include`/`exclude` in `pyproject.toml`. This project's build ships exactly
