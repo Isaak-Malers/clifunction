@@ -141,10 +141,8 @@ class Targets:
     """holds functions to be exposed over CLI"""
     def __init__(self):
         self.headingName = os.path.basename(sys.argv[0])
-        self.targets = []  # These are not in a subdirectory
+        self.targets = []
         self.parser = DefaultArgumentParser()
-
-        self.recursiveTargets: [Targets] = []
 
     def printer(self, to_print: str):
         """
