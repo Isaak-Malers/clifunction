@@ -1,4 +1,4 @@
-from ..CliFunction import DefaultArgumentParser
+from clifunction import DefaultArgumentParser
 
 
 class TestGenerateMethodKwargs:

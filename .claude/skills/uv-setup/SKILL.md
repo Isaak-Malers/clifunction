@@ -33,8 +33,9 @@ uv build             # produces the same wheel as `python -m build` — same hat
   not assumed. `pylint` was unaffected because both CI invocations glob explicit paths
   (`./*.py`, `./test/*.py`) rather than recursing from `.`.
 
-Nothing in `CliFunction.py`, `pyproject.toml`'s `[build-system]`/`[project]` tables, or the wheel
-contents changed. `uv build` works against this project's existing `hatchling` backend with zero
+Nothing in the library source, `pyproject.toml`'s `[build-system]`/`[project]` tables (beyond
+this session's own version bump/build-include changes), or the wheel-building mechanism changed
+to make uv work. `uv build` works against this project's existing `hatchling` backend with zero
 special-casing — uv doesn't require its own backend, it drives whatever PEP 517 backend the
 project already declares. This is *why* "at minimum UV support" was cheap: the project was
 already standards-compliant enough that uv had nothing to work around.
@@ -59,8 +60,8 @@ already standards-compliant enough that uv had nothing to work around.
 
 - New dev tool → `uv add --dev <package>`, then run the version-validation checklist's lint/test
   steps to confirm it doesn't change CI-visible behavior, then check it against
-  `maintainer-taste` (dev-only deps are cheap to approve; anything imported by `CliFunction.py`
-  itself is not).
+  `maintainer-taste` (dev-only deps are cheap to approve; anything imported by the `clifunction`
+  package itself is not).
 - Other package managers (poetry, pdm, conda) were *not* separately tested — they weren't asked
   for. Since the project already round-trips through the standard `pyproject.toml` +
   `hatchling` PEP 517 interface, there's no structural reason they'd fail, but "no structural

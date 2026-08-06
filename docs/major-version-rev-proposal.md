@@ -1,9 +1,12 @@
 # clifunction major-version-rev proposal
 
-Status: **proposal only** — nothing in this document has been implemented. Every finding below
-was verified against the actual codebase/CI this session (commands shown), not inferred.
-Current version: `0.2.4` (pre-1.0 — no public API stability promise yet, which matters for the
-sequencing recommendation below).
+Status: **in progress**, on branch `im/ver-1.0.0-prep`. This document is kept as-written (it's
+the investigation and the reasoning, not a live tracker) — for current implementation status of
+the sequencing plan in section "Sequencing" below, see the checklist in `CLAUDE.md`. Every
+finding below was verified against the actual codebase/CI at the time of writing (commands
+shown), not inferred. Version at the time of writing: `0.2.4` (pre-1.0 — no public API stability
+promise yet, which mattered for the sequencing recommendation below; the package is now at
+`1.0.0` as of the section-1/section-2 items landing).
 
 ## Framing
 

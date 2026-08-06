@@ -13,14 +13,16 @@ Every proposed change is judged against that, not against "is this a good featur
 
 These are not style preferences — breaking them changes what the library *is*:
 
-1. **Zero runtime dependencies.** `CliFunction.py` imports only `inspect`, `os`, `sys`, `re`.
-   A change that needs `click`, `pydantic`, `rich`, or anything off PyPI is disqualified by
-   default, no matter how good the feature is. If a feature truly cannot be done in stdlib,
-   that's a signal it doesn't belong in this library.
-2. **One file is the surface.** Someone should be able to `cat CliFunction.py` and understand
-   the whole system. Splitting into modules is a packaging decision (see the major-version-rev
-   proposal), not a place to smuggle in growth — don't let "let's clean this up" become "let's
-   add a plugin system while we're in here."
+1. **Zero runtime dependencies.** The `clifunction/` package imports only `inspect`, `os`, `sys`,
+   `re` across all six of its files. A change that needs `click`, `pydantic`, `rich`, or anything
+   off PyPI is disqualified by default, no matter how good the feature is. If a feature truly
+   cannot be done in stdlib, that's a signal it doesn't belong in this library.
+2. **The package is the surface, and it stays small.** As of the `1.0.0` restructure this is six
+   files, ~230 total lines (see `CLAUDE.md`'s module table) — someone should be able to read all
+   of it in one sitting, same bar as the old single-file layout, just organized by domain now.
+   A new file is fine when it's a genuinely new domain (see the module table); it is not license
+   to smuggle in growth — don't let "let's clean this up" become "let's add a plugin system while
+   we're in here."
 3. **Convention, not configuration.** The entire contract is: decorator + keyword-only args +
    type annotations + docstring. No YAML, no config file, no `.clifunctionrc`. If a proposed
    feature needs a config file to be usable, it's the wrong feature for this library.
@@ -67,15 +69,17 @@ an agent needs to know to use this correctly* — not "add features agents might
 - A docstring is the only documentation surface. If a feature can't be explained by "add a
   docstring," it's asking the CLI author to learn a second thing.
 
-Do **not** read "AI-first" as "add a `--json` output mode" or "add a machine-readable schema
-dump" without confirming that against constraint 3 above — those are real proposals, but they're
-major-version-rev material with their own cost/benefit, not a taste-skill rubber stamp. See
-`docs/major-version-rev-proposal.md`.
+Do **not** read "AI-first" as an open invitation to add output modes or introspection surfaces
+without running them through constraint 3 first. The `--schema` JSON introspection output in
+`docs/major-version-rev-proposal.md` passed that review (stdlib `json`, one new public entry
+point, closed scope) — that's the bar, not an exception to it.
 
 ## Fast rejections (patterns seen in similar libraries — don't reintroduce them here)
 
-- Subcommand nesting deeper than `Targets.recursiveTargets` already stubs, before anyone has
-  asked for it.
+- Subcommand nesting, before anyone has asked for it. (`Targets.recursiveTargets` used to be
+  unfinished scaffolding for this and was deleted for exactly this reason — see
+  `docs/major-version-rev-proposal.md` section 3. If nested subcommands get proposed again, treat
+  it as a fresh feature with a real design, not a resurrection of that stub.)
 - A second way to register targets (e.g. explicit `.register()` alongside the decorator).
 - Config-file-driven behavior toggles.
 - Silently catching and reformatting exceptions from user code (see constraint 4).

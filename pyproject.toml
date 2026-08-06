@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "clifunction"
-version = "0.2.4"
+version = "1.0.0"
 authors = [
   { name="Isaak Malers", email="isaak.malers+clifunction@gmail.com" },
 ]
@@ -24,7 +24,7 @@ classifiers = [
 
 
 [tool.hatch.build]
-include = ["CliFunction.py"]
+include = ["clifunction/**/*.py"]
 exclude = [
     "Example.py",
     "/docs",

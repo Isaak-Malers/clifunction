@@ -6,8 +6,8 @@ description: Use when auditing what a clifunction-built CLI actually does at the
 # Auditing clifunction CLI usability
 
 This audits *behavior at the terminal*, not source code style. Run the target file directly and
-read the actual output — don't infer it from `CliFunction.py`. Every check below is a command
-you actually run.
+read the actual output — don't infer it from the `clifunction` package source. Every check below
+is a command you actually run.
 
 ## Checklist
 
@@ -36,17 +36,14 @@ For a target file `X.py` built with clifunction:
    running. Confirm this line alone is enough to tell an agent what actually got invoked and
    with what values — no silent argument coercion (e.g. a typo'd flag name should not silently
    resolve to a same-shaped different argument).
-5. **Missing required argument.** Call a target missing a required keyword-only arg. As of this
-   audit, this leaks a raw Python `TypeError` traceback instead of a clean CLI error — this is
-   the single worst thing in the current UX for an agent, because the traceback looks like a bug
-   in the *target* function, not a usage error:
-   ```
-   $ python -c "...call needs_two(a='hi') missing b..."
-   needs_two:  {'a': 'hi'}
-   TypeError: needs_two() missing 1 required keyword-only argument: 'b'
-   ```
-   An agent parsing this will likely try to "fix" the target function instead of retrying with
-   the right flag. Flag every occurrence of this as a P1 usability bug, not a style nit.
+5. **Missing required argument.** Call a target missing a required keyword-only arg.
+   **Fixed as of the `1.0.0` restructure** — this used to leak a raw Python `TypeError` traceback
+   instead of a clean CLI error (the single worst thing in the old UX for an agent, because the
+   traceback looked like a bug in the *target* function, not a usage error). It's now treated as
+   a normal no-match: `No Matches found for args: [...]` followed by the man page, same as any
+   other unresolvable invocation. Verify this is still true when auditing — if a future change to
+   `generate_method_kwargs` (`clifunction/parsing.py`) reintroduces a path where a candidate with
+   missing required args gets invoked anyway, that's a P1 regression, not a style nit.
 6. **Bool flag symmetry.** For every bool kwarg, verify both `--flag` (bare, coerces to `True`)
    and `--flag=false`/`--flag=true` work, and that `--flag=maybe` or similar garbage returns "no
    match" rather than silently defaulting. `type_coercer` only accepts

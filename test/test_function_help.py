@@ -1,4 +1,4 @@
-from ..CliFunction import Targets
+from clifunction import Targets
 
 
 class TestFunctionHelp:

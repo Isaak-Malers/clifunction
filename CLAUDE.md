@@ -1,48 +1,57 @@
 # clifunction
 
-A single-file, zero-runtime-dependency library that turns annotated Python functions into a
-CLI. The whole contract: `@cli_function` + keyword-only args + type annotations + a docstring
-→ a man page and an invokable command, for free.
+A small, zero-runtime-dependency library that turns annotated Python functions into a CLI. The
+whole contract: `@cli_function` + keyword-only args + type annotations + a docstring → a man
+page and an invokable command, for free.
 
 ## Where things live
 
-| Symbol | File | Role |
+As of the `1.0.0` package restructure, `import clifunction` resolves to a real package
+(`clifunction/`), not a loose top-level module — see "Namespace map" below for why that used to
+be the confusing part.
+
+| Symbol | Module | Role |
 |---|---|---|
-| `cli_function` | `CliFunction.py` | decorator; registers a function with the module-level `targets` singleton at import time |
-| `cli` | `CliFunction.py` | entry point; parses `sys.argv`, dispatches, prints the man page and exits 1 on any failure to match |
-| `Targets` | `CliFunction.py` | holds registered functions for one file; `add_target`/`execute`/`man`/`function_help` |
-| `DefaultArgumentParser` | `CliFunction.py` | abbreviation generation, string→type coercion, kwarg-dict construction from argv |
-| `CliFunctionException` | `CliFunction.py` | raised only for wrapper-authored mistakes (bad decoration), never for the wrapped function's own errors — see `maintainer-taste` skill |
+| `cli_function`, `cli`, `targets` | `clifunction/__init__.py` | public entry points + the module-level `Targets` singleton; thin glue only |
+| `Targets` | `clifunction/targets.py` | registration (import-time, process-lifetime) + execution + help rendering; `add_target`/`execute`/`man`/`function_help` |
+| `DefaultArgumentParser` | `clifunction/parsing.py` | per-invocation kwarg-dict construction (`generate_method_kwargs`); delegates to `naming`/`coercion` |
+| `name_and_abbreviations` | `clifunction/naming.py` | pure string transform, no I/O |
+| `type_coercer` | `clifunction/coercion.py` | pure string→type conversion, closed set of types |
+| `CliFunctionException` | `clifunction/exceptions.py` | raised only for wrapper-authored mistakes (bad decoration), never for the wrapped function's own errors — see `maintainer-taste` skill |
 
-Everything lives in one module. There is no package-internal layering to preserve — see the
-`major-version-rev` proposal in `docs/` for the case *for* splitting it, but until that lands,
-new code goes in `CliFunction.py` next to what it extends, not into a new file.
+Six files, ~230 total lines. `__init__.py` re-exports everything (`__all__`) so `from clifunction
+import cli_function, cli, CliFunctionException, Targets, DefaultArgumentParser` remains the one
+documented import regardless of internal layout — new code should extend the module whose domain
+it belongs to (see the table), not get bolted onto `__init__.py`.
 
-## Namespace map (confusing on purpose right now, see proposal)
+**Gotcha carried over from the old monolith:** a `# pylint: disable=X` comment scopes from where
+it appears to the end of the enclosing block, not just "the next line." In the old single-file
+layout, `type_coercer`'s `# pylint: disable=too-many-return-statements` silently also suppressed
+that check on `generate_method_kwargs` further down the same class body — invisible until the
+module split separated them and pylint caught the real violation. Don't assume a disable comment
+found above one function is scoped to only that function; check where the enclosing block ends.
 
-Five different spellings refer to overlapping things and are **not interchangeable**:
+## Namespace map (was confusing; the `1.0.0` restructure fixed the load-bearing part)
 
-- `clifunction` — the PyPI package name and the repo directory name.
-- `CliFunction.py` / `CliFunction` — the actual importable module after `pip install` (the built
-  wheel ships this one file loose at the top level; `__init__.py` is **not** shipped — check
-  `[tool.hatch.build] include` in `pyproject.toml`).
-- `cli_function` — the decorator.
-- `cli` — the entry-point function end users call in their own `if __name__ == "__main__":` block.
-- `Targets` — the class actually doing the work.
-
-When writing docs, tests, or skills, say which one you mean; "the CLI function thing" is not
-resolvable. A major-version proposal to collapse this exists — see `docs/major-version-rev-proposal.md`.
+- `clifunction` — PyPI package name, repo directory name, **and now the actual import name**
+  (`from clifunction import ...`). Previously the wheel shipped a loose `CliFunction.py` module
+  instead — that's what made `pip install clifunction` and the import disagree in case and
+  punctuation. Fixed as part of `docs/major-version-rev-proposal.md` section 1.
+- `cli_function` — the decorator. `cli` — the entry-point function end users call in their own
+  `if __name__ == "__main__":` block. `Targets` — the class actually doing the work. These three
+  names are still distinct on purpose; nothing wrong with them individually.
 
 ## Commands
 
 ```bash
-# tests (relative imports in test/*.py require running from repo root)
+# tests (from repo root -- pytest's rootdir path insertion is what makes `import clifunction`
+# resolve without installing the package; see the unit-testing skill)
 uv run pytest ./test -v          # or: pytest ./test -v inside a venv with pytest installed
 
-# lint + types (all three must be clean before anything merges — CI enforces this)
+# lint + types (all must be clean before anything merges — CI enforces this)
 uv run flake8 .
-uv run pylint --disable=line-too-long,invalid-name,missing-module-docstring ./*.py
-uv run mypy CliFunction.py
+uv run pylint --disable=line-too-long,invalid-name,missing-module-docstring ./*.py ./clifunction/*.py
+uv run mypy clifunction/
 
 # build
 uv build                          # or: python -m build
@@ -66,8 +75,7 @@ not a hypothetical — see the `version-validation` skill before anything that c
   codebase at all. Load before proposing or reviewing any addition.
 - `usability-audit` — checklist for auditing what a clifunction-built CLI actually does at the
   terminal (help text, error text, exit codes), for both a human and an agent driving it.
-- `unit-testing` — how tests are organized here, the relative-import quirk, and where the
-  boundary-coverage gaps currently are.
+- `unit-testing` — how tests are organized here and where the boundary-coverage gaps currently are.
 - `version-validation` — pre-publish gate given the auto-publish-on-push CI above.
 - `uv-setup` — what `uv` support means for a library (not an app) and what's already wired up.
 
@@ -80,7 +88,9 @@ check this list before assuming something is or isn't done yet:
 - [x] Dead `recursiveTargets` scaffolding removed.
 - [x] Type annotations fixed (`list[str]`, `dict | None`, etc. via `from __future__ import
       annotations` — floor stays `>=3.8`); `mypy` added to `code-quality.yml`.
-- [ ] Package restructure `CliFunction.py` → `clifunction/` package, version bump to `1.0.0`.
+- [x] Package restructure `CliFunction.py` → `clifunction/` package, version bumped to `1.0.0`.
+      Verified: clean venv, `pip install` the built wheel, `from clifunction import ...` works
+      with zero path hacks.
 - [ ] `--schema` JSON introspection output.
 - [ ] Differentiated exit codes.
 - Not scheduled yet (per the proposal, evaluate only after the above are shipped and in use):

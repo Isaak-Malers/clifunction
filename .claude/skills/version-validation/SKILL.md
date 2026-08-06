@@ -21,7 +21,8 @@ preventative local check. This skill is that preventative check, run before the 
 ## Checklist, in order
 
 1. **Tests pass, run the way CI runs them.** `pytest ./test` from repo root (see `unit-testing`
-   skill for why "from repo root" matters — the relative imports break otherwise).
+   skill for why "from repo root" matters — that's what puts the package on `sys.path` so
+   `from clifunction import ...` resolves without installing anything).
    `automated-tests.yml`'s matrix covers Python 3.8–3.12. If the local interpreter is outside
    that range (verify with `python3 --version`), passing locally is not proof CI will pass —
    note the gap explicitly rather than asserting confidence you don't have. As of this check,
@@ -31,25 +32,31 @@ preventative local check. This skill is that preventative check, run before the 
    approximate with a subset):
    ```bash
    flake8 .
-   pylint --disable=line-too-long,invalid-name,missing-module-docstring ./*.py
+   pylint --disable=line-too-long,invalid-name,missing-module-docstring ./*.py ./clifunction/*.py
    pylint --disable=line-too-long,invalid-name,missing-module-docstring,import-error,missing-class-docstring,comparison-of-constants,missing-function-docstring,too-few-public-methods,R0801 ./test/*.py
-   mypy CliFunction.py
+   mypy clifunction/
    ```
    (`mypy` was added to `code-quality.yml` alongside flake8/pylint — it catches things they
    don't, e.g. it originally found 11 real errors from invalid `[str]`-literal annotations and
-   `-> dict` signatures that actually returned `None` on failure paths.)
+   `-> dict` signatures that actually returned `None` on failure paths. Also watch for pylint
+   disable-comment scope: they run to the end of the enclosing block, not just "the next line" —
+   splitting `CliFunction.py` into `clifunction/*.py` exposed one real violation that a
+   mis-scoped disable comment had been silently hiding for years. See `CLAUDE.md`.)
 3. **Build succeeds and ships what you think it ships.** `python -m build` or `uv build`, then
    actually open the wheel (`unzip -l dist/*.whl`) and confirm the file list matches
-   `[tool.hatch.build] include`/`exclude` in `pyproject.toml`. This project's build ships exactly
-   one file (`CliFunction.py`) — if a change added a new module, a new resource, or renamed
-   something, it will silently *not* be in the published package unless `include` was updated
-   too. This has no test coverage; it's a manual check every time `include`/`exclude` or the
-   module layout changes.
+   `[tool.hatch.build] include`/`exclude` in `pyproject.toml`. As of `1.0.0` this project ships
+   the whole `clifunction/` package (six files) — if a change added a new module, a new
+   resource, or renamed something, it will silently *not* be in the published package unless
+   `include` was updated too. This has no test coverage; it's a manual check every time
+   `include`/`exclude` or the module layout changes. (Also worth the extra step done for the
+   `1.0.0` restructure: `pip install` the built wheel into a genuinely clean venv and confirm
+   `from clifunction import ...` actually works — a stale editable install or sys.path leftover
+   from dev work can hide a real packaging bug that `uv build` alone won't catch.)
 4. **Version was actually bumped, and bumped in the one place that matters.** `version` lives in
-   `pyproject.toml`'s `[project]` table only — there is no `__version__` string inside
-   `CliFunction.py` to keep in sync (confirm this is still true; if a future change adds one,
-   this checklist needs a second line item). If the version wasn't bumped, the push will still
-   fire the publish job and fail there — better to catch it here than watch a red CI run.
+   `pyproject.toml`'s `[project]` table only — there is no `__version__` string inside the
+   `clifunction` package to keep in sync (confirm this is still true; if a future change adds
+   one, this checklist needs a second line item). If the version wasn't bumped, the push will
+   still fire the publish job and fail there — better to catch it here than watch a red CI run.
 5. **`mkdocs build -s` succeeds**, matching what `deploy-pages.yml` runs (`-s` is strict mode —
    it fails on broken links/references, not just build errors). `docs/index.md` is also the
    `readme` referenced in `pyproject.toml`, so it's rendered in two different places (PyPI
