@@ -25,12 +25,18 @@ jobs:
         run: |
           pip install -r requirements-dev.txt
 
-      - name: Run pytest
+      - name: Run unit tests
         run: |
           pytest ./test --junitxml=./test/results-${{ matrix.python-version }}.xml
+
+      - name: Run system integration tests
+        run: |
+          pytest ./integration_test --junitxml=./integration_test/results-${{ matrix.python-version }}.xml
 
       - name: Archive test results
         uses: actions/upload-artifact@v2
         with:
           name: test-results-${{ matrix.python-version }}
-          path: ./test/results-${{ matrix.python-version }}.xml
+          path: |
+            ./test/results-${{ matrix.python-version }}.xml
+            ./integration_test/results-${{ matrix.python-version }}.xml
