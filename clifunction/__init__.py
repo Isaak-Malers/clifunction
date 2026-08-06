@@ -5,6 +5,7 @@ The library will generate a man page for your file, and provide helpful error me
 """
 from __future__ import annotations
 
+import json
 import sys
 
 from .exceptions import CliFunctionException
@@ -41,6 +42,13 @@ def cli(args: list[str] | None = None):
     if len(args) < 2:
         print(targets.man())
         raise SystemExit(1)
+
+    # Reserved, not routed through the normal target-matching machinery: "--schema" can never
+    # collide with a real target name/abbreviation, since name_and_abbreviations never produces
+    # anything starting with "--".
+    if args[1] == "--schema":
+        print(json.dumps(targets.schema(), indent=2))
+        return
 
     if not targets.execute(args=args):
         print(targets.man())

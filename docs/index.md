@@ -65,3 +65,21 @@ Example.py
                 start_version | default:0 | type:<class 'int'>
                 end_version | default:3 | type:<class 'int'>
 ```
+
+5. Every CLI also exposes its full contract as JSON via `--schema`, for scripts and agents that
+   need to enumerate targets/arguments/types without parsing the man page:
+
+```commandline
+isaak@laptop:/mnt/c/Users/isaak/dev/clifunction$ python3 Example.py --schema
+[
+  {
+    "name": "migrate_data_base",
+    "abbreviations": ["migrate_data_base", "mdb"],
+    "docstring": "Runs DB migrations.",
+    "args": [
+      {"name": "start_version", "abbreviations": ["start_version", "sv"], "type": "int", "default": 0, "required": false},
+      {"name": "end_version", "abbreviations": ["end_version", "ev"], "type": "int", "default": 3, "required": false}
+    ]
+  }
+]
+```

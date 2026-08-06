@@ -5,6 +5,7 @@ import os
 import sys
 
 from .exceptions import CliFunctionException
+from .naming import name_and_abbreviations
 from .parsing import DefaultArgumentParser
 
 
@@ -114,3 +115,37 @@ class Targets:
             function_docs.append(self.function_help(func=func, pad=pad + "\t"))
         function_docs_string = "\n".join(function_docs)
         return header + "\n" + function_docs_string
+
+    def schema(self) -> list[dict]:
+        """
+        Returns a JSON-serializable structure describing every registered target: its name,
+        its recognized abbreviations, its docstring, and each keyword-only argument's name,
+        abbreviations, type, default, and whether it's required.  This is the machine-readable
+        equivalent of man() -- built from the same inspect.getfullargspec data, just shaped for
+        a program to consume instead of a human to read.
+        """
+        result = []
+        for func in self.targets:
+            # pylint: disable=unused-variable
+            names, varargs, varkw, defaults, kwonlyargs, kwonlydefaults, annotations = inspect.getfullargspec(func)
+            if kwonlydefaults is None:
+                kwonlydefaults = {}
+
+            args = []
+            for name in kwonlyargs:
+                arg_type = annotations.get(name)
+                args.append({
+                    "name": name,
+                    "abbreviations": name_and_abbreviations(python_name=name),
+                    "type": arg_type.__name__ if arg_type is not None else None,
+                    "default": kwonlydefaults.get(name),
+                    "required": name not in kwonlydefaults,
+                })
+
+            result.append({
+                "name": func.__name__,
+                "abbreviations": name_and_abbreviations(python_name=func.__name__),
+                "docstring": func.__doc__.strip(),
+                "args": args,
+            })
+        return result

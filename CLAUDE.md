@@ -91,7 +91,8 @@ check this list before assuming something is or isn't done yet:
 - [x] Package restructure `CliFunction.py` → `clifunction/` package, version bumped to `1.0.0`.
       Verified: clean venv, `pip install` the built wheel, `from clifunction import ...` works
       with zero path hacks.
-- [ ] `--schema` JSON introspection output.
+- [x] `--schema` JSON introspection output (`Targets.schema()`, wired into `cli()` as a reserved
+      flag that can't collide with a real target name/abbreviation).
 - [ ] Differentiated exit codes.
 - Not scheduled yet (per the proposal, evaluate only after the above are shipped and in use):
   extended type coercion (`Path`, `Enum`, `Optional[T]`).
