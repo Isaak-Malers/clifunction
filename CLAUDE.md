@@ -44,9 +44,12 @@ found above one function is scoped to only that function; check where the enclos
 ## Commands
 
 ```bash
-# tests (from repo root -- pytest's rootdir path insertion is what makes `import clifunction`
-# resolve without installing the package; see the unit-testing skill)
+# unit tests, in-process (from repo root -- pytest's rootdir path insertion is what makes
+# `import clifunction` resolve without installing the package; see the unit-testing skill)
 uv run pytest ./test -v          # or: pytest ./test -v inside a venv with pytest installed
+
+# system/integration tests, black-box subprocess execs -- separate suite, separate concern
+uv run pytest ./integration_test -v
 
 # lint + types (all must be clean before anything merges — CI enforces this)
 uv run flake8 .
@@ -63,11 +66,19 @@ requirements-dev.txt` still works as a parallel path; don't let the two drift si
 
 ## CI has a live wire
 
-`.github/workflows/publish-package.yml` runs `twine upload` on **every push to `main`**, with no
-version-bump guard and no manual approval gate. If `pyproject.toml`'s `version` isn't bumped,
-the job fails on the duplicate-version upload (that's the only thing currently preventing an
-accidental re-publish). Any change that touches `main` should treat that as a real consequence,
-not a hypothetical — see the `version-validation` skill before anything that could land on main.
+`.github/workflows/publish-package.yml` runs `twine upload --skip-existing` on **every push to
+`main`** (currently manually disabled in the repo's Actions settings, pending re-enable). With
+`--skip-existing`, an unchanged version silently no-ops instead of failing loudly — but a real
+version bump still publishes normally, with no approval gate. Any change that touches `main`
+should treat that as a real consequence, not a hypothetical — see the `version-validation` skill
+before anything that could land on main.
+
+Also: `branches: ['*']` in a workflow's `on.push` does **not** match branch names containing
+`/` (GitHub's glob semantics — `*` doesn't cross `/`, only `**` does). `automated-tests.yml` and
+`code-quality.yml` both had this bug and silently never ran on any `im/...`-prefixed branch;
+fixed by dropping the branch filter entirely (bare `on: [push]`). Worth knowing if a workflow
+ever appears to "just not trigger" on a branch — check this before assuming an outage or a
+platform issue.
 
 ## Skills for this repo
 
