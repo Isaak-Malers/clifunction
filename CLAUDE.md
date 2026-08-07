@@ -64,6 +64,23 @@ uv build                          # or: python -m build
 the `uv-setup` skill for what that assumes and how to extend it. `pip install -r
 requirements-dev.txt` still works as a parallel path; don't let the two drift silently.
 
+### Python version floor: 3.8, and that's the real ceiling on going lower
+
+`requires-python = ">=3.8"` isn't an arbitrary choice. Audited: the only version-sensitive
+construct anywhere in `clifunction/*.py` is `from __future__ import annotations` (PEP 563,
+introduced in Python **3.7** — no walrus operator, no positional-only params, no `match`
+statement, no explicit `typing` imports). So 3.7 is the true language-feature floor, one version
+below what you'd guess from the `list[str]`/`dict | None` annotation style.
+
+But it's not achievable in CI, and don't re-derive this without checking first: verified live
+(added `'3.7'` to `automated-tests.yml`'s matrix, pushed, watched it fail) that
+`actions/setup-python` cannot provision Python 3.7 on `ubuntu-latest` (currently Ubuntu 24.04) —
+`The version '3.7' with architecture 'x64' was not found for Ubuntu 24.04.` The
+[python-versions manifest](https://raw.githubusercontent.com/actions/python-versions/main/versions-manifest.json)
+still lists 3.7.x builds, but their prebuilt binaries only cover Ubuntu 20.04/22.04. Since we
+can't test 3.7 in CI, we don't claim it in `requires-python` — 3.8 is the floor that's both
+technically sound *and* provable.
+
 ## CI has a live wire
 
 `.github/workflows/publish-package.yml` runs `twine upload --skip-existing` on **every push to
