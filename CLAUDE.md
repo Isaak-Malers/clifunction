@@ -6,9 +6,8 @@ page and an invokable command, for free.
 
 ## Where things live
 
-As of the `1.0.0` package restructure, `import clifunction` resolves to a real package
-(`clifunction/`), not a loose top-level module — see "Namespace map" below for why that used to
-be the confusing part.
+`import clifunction` resolves to a real package (`clifunction/`), not a loose top-level module —
+see "Namespace map" below for the naming distinctions worth knowing.
 
 | Symbol | Module | Role |
 |---|---|---|
@@ -24,22 +23,19 @@ import cli_function, cli, CliFunctionException, Targets, DefaultArgumentParser` 
 documented import regardless of internal layout — new code should extend the module whose domain
 it belongs to (see the table), not get bolted onto `__init__.py`.
 
-**Gotcha carried over from the old monolith:** a `# pylint: disable=X` comment scopes from where
-it appears to the end of the enclosing block, not just "the next line." In the old single-file
-layout, `type_coercer`'s `# pylint: disable=too-many-return-statements` silently also suppressed
-that check on `generate_method_kwargs` further down the same class body — invisible until the
-module split separated them and pylint caught the real violation. Don't assume a disable comment
-found above one function is scoped to only that function; check where the enclosing block ends.
+**Gotcha:** a `# pylint: disable=X` comment scopes from where it appears to the end of the
+enclosing block, not just "the next line." `type_coercer`'s
+`# pylint: disable=too-many-return-statements` also silently suppresses that check on
+`generate_method_kwargs` if both sit in the same class body. Don't assume a disable comment found
+above one function is scoped to only that function; check where the enclosing block ends.
 
-## Namespace map (was confusing; the `1.0.0` restructure fixed the load-bearing part)
+## Namespace map
 
-- `clifunction` — PyPI package name, repo directory name, **and now the actual import name**
-  (`from clifunction import ...`). Previously the wheel shipped a loose `CliFunction.py` module
-  instead — that's what made `pip install clifunction` and the import disagree in case and
-  punctuation. Fixed as part of `docs/major-version-rev-proposal.md` section 1.
+- `clifunction` — PyPI package name, repo directory name, and the import name
+  (`from clifunction import ...`) all agree.
 - `cli_function` — the decorator. `cli` — the entry-point function end users call in their own
   `if __name__ == "__main__":` block. `Targets` — the class actually doing the work. These three
-  names are still distinct on purpose; nothing wrong with them individually.
+  names are distinct on purpose; nothing wrong with them individually.
 
 ## Commands
 
@@ -90,6 +86,9 @@ version bump still publishes normally, with no approval gate. Any change that to
 should treat that as a real consequence, not a hypothetical — see the `version-validation` skill
 before anything that could land on main.
 
+`main` also has branch protection requiring all eight CI jobs green before merge: `build (3.8)`
+through `build (3.14)` plus `code-quality`. No partial/experimental Python version is exempt.
+
 Also: `branches: ['*']` in a workflow's `on.push` does **not** match branch names containing
 `/` (GitHub's glob semantics — `*` doesn't cross `/`, only `**` does). `automated-tests.yml` and
 `code-quality.yml` both had this bug and silently never ran on any `im/...`-prefixed branch;
@@ -107,25 +106,20 @@ platform issue.
 - `version-validation` — pre-publish gate given the auto-publish-on-push CI above.
 - `uv-setup` — what `uv` support means for a library (not an app) and what's already wired up.
 
-## In progress: major-version-rev (see `docs/major-version-rev-proposal.md`)
+## Behavior contract
 
-Working branch: `im/ver-1.0.0-prep`. Implementation status of the proposal's sequencing plan —
-check this list before assuming something is or isn't done yet:
+Guarantees worth knowing before touching `clifunction/parsing.py` or `clifunction/targets.py`:
 
-- [x] Missing required kwonly args are now treated as no-match instead of leaking a raw `TypeError`.
-- [x] Dead `recursiveTargets` scaffolding removed.
-- [x] Type annotations fixed (`list[str]`, `dict | None`, etc. via `from __future__ import
-      annotations` — floor stays `>=3.8`); `mypy` added to `code-quality.yml`.
-- [x] Package restructure `CliFunction.py` → `clifunction/` package, version bumped to `1.0.0`.
-      Verified: clean venv, `pip install` the built wheel, `from clifunction import ...` works
-      with zero path hacks.
-- [x] `--schema` JSON introspection output (`Targets.schema()`, wired into `cli()` as a reserved
-      flag that can't collide with a real target name/abbreviation).
-- [x] Differentiated exit codes: `1`=no args, `2`=no match, `3`=ambiguous match, `0`=success
-      (`clifunction.EXIT_NO_ARGS`/`EXIT_NO_MATCH`/`EXIT_AMBIGUOUS_MATCH`). "Target itself raised"
-      deliberately left as Python's normal uncaught-exception behavior — see the `usability-audit`
-      skill for why.
-- Not scheduled yet (per the proposal, evaluate only after the above are shipped and in use):
-  extended type coercion (`Path`, `Enum`, `Optional[T]`).
+- Missing required kwonly args are treated as no-match, not a leaked raw `TypeError`.
+- Type annotations use `from __future__ import annotations` (`list[str]`, `dict | None`, etc.) —
+  floor stays `>=3.8`; `mypy` runs in `code-quality.yml` alongside flake8/pylint.
+- `--schema` (`Targets.schema()`) exposes the full CLI contract as JSON — reserved so it can't
+  collide with a real target name or abbreviation.
+- Exit codes are differentiated: `1`=no args, `2`=no match, `3`=ambiguous match, `0`=success
+  (`clifunction.EXIT_NO_ARGS`/`EXIT_NO_MATCH`/`EXIT_AMBIGUOUS_MATCH`). "Target itself raised" is
+  deliberately left as Python's normal uncaught-exception behavior — see the `usability-audit`
+  skill for why.
+- Not implemented: extended type coercion (`Path`, `Enum`, `Optional[T]`) or per-argument
+  documentation via `typing.Annotated`. No design exists for either yet — don't assume support.
 
 No runtime deps, and that's load-bearing — see `maintainer-taste`.

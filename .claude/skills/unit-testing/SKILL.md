@@ -7,7 +7,7 @@ description: Use when writing or reviewing tests in this repo's test/ directory.
 
 ## Imports and how they resolve
 
-As of the `1.0.0` package restructure, tests import the real package directly:
+Tests import the real package directly:
 
 ```python
 from clifunction import Targets
@@ -15,20 +15,16 @@ from clifunction import Targets
 
 This is a plain absolute import — it works because pytest's default import mode inserts the
 first ancestor directory *without* an `__init__.py` onto `sys.path`. `test/` has an
-`__init__.py`; the repo root does not (its old one was removed as part of the restructure); so
-the repo root lands on `sys.path`, and since `clifunction/` is a real package sitting right
-there, `import clifunction` resolves — **without the project needing to be pip-installed**.
-Verified by running `pytest ./test` in a venv that has only `pytest` installed, nothing else.
+`__init__.py`; the repo root does not; so the repo root lands on `sys.path`, and since
+`clifunction/` is a real package sitting right there, `import clifunction` resolves —
+**without the project needing to be pip-installed**. Verified by running `pytest ./test` in a
+venv that has only `pytest` installed, nothing else.
 
 Practically:
-- Still run pytest **from the repo root**: `pytest ./test` or `uv run pytest ./test`. That's what
-  puts the repo root on `sys.path` in the first place.
+- Run pytest **from the repo root**: `pytest ./test` or `uv run pytest ./test`. That's what puts
+  the repo root on `sys.path` in the first place.
 - A new test file goes in `test/`, imports with `from clifunction import ...` like every existing
   file, no relative-import tricks needed.
-
-(Before `1.0.0` this was `from ..CliFunction import Targets` — a double-relative import that only
-worked because of a root-level `__init__.py` that no longer exists. If you see that old form
-anywhere, it's stale and should be updated.)
 
 ## Existing convention: one test file per method under test
 
@@ -47,8 +43,8 @@ the module it now lives in (see `CLAUDE.md`'s module table for where each class 
 
 New behavior on an existing method goes in that method's existing file. A genuinely new method
 gets a new file named `test_<method_name>.py`. Don't create a `test_misc.py` grab-bag, and don't
-reorganize this file list to mirror the new module boundaries just because the module split
-happened — the method-level granularity has been more stable than the file layout so far.
+reorganize this file list to mirror module boundaries as a drive-by cleanup — method-level
+granularity has been more stable than file layout.
 
 ## Fixture pattern already in use
 

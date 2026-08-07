@@ -4,6 +4,14 @@
 
 clifunction makes building and maintaining command line utilities easier than ever by using the annotations included in modern python versions, Here is a quick look:
 
+### Installation
+
+```bash
+pip install clifunction
+# or
+uv add clifunction
+```
+
 How your code looks:
 ```python
 @cli_function
