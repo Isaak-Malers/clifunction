@@ -20,7 +20,7 @@ class TestAbbreviations:
     def test_ambiguous_target_abbreviation_matches_neither(self, run_tool):
         # ambiguous_one and another_option both abbreviate to 'ao' -- on purpose.
         result = run_tool("dummy_cli.py", "ao")
-        assert result.returncode == 1
+        assert result.returncode == 3  # EXIT_AMBIGUOUS_MATCH
         prefix = "Multiple Matches found for args: ['dummy_cli.py', 'ao']\nambiguous_one:  {}\nanother_option:  {}\n"
         assert result.stdout == prefix + DUMMY_CLI_MAN_PAGE
 

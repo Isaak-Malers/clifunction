@@ -3,7 +3,7 @@
 Registers two targets with the same name. The second @cli_function application should raise at
 decoration time, before the module even finishes importing.
 """
-from CliFunction import cli_function, cli
+from clifunction import cli_function, cli
 
 
 @cli_function

@@ -4,7 +4,7 @@ A CLI built with clifunction, used only by integration_test/ as a real subproces
 Covers every argument type the library supports and one deliberate abbreviation collision
 (ambiguous_one / another_option both abbreviate to 'ao') -- not a demo, a fixture.
 """
-from CliFunction import cli_function, cli
+from clifunction import cli_function, cli
 
 
 @cli_function

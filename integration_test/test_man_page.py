@@ -15,6 +15,6 @@ class TestManPage:
 
     def test_unknown_target_reprints_man_page_after_a_no_matches_line(self, run_tool):
         result = run_tool("dummy_cli.py", "this_target_does_not_exist")
-        assert result.returncode == 1
+        assert result.returncode == 2  # EXIT_NO_MATCH
         prefix = "No Matches found for args: ['dummy_cli.py', 'this_target_does_not_exist']\n"
         assert result.stdout == prefix + DUMMY_CLI_MAN_PAGE

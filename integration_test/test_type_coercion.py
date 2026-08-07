@@ -17,7 +17,7 @@ class TestTypeCoercion:
 
     def test_int_failure_is_a_no_match(self, run_tool):
         result = run_tool("dummy_cli.py", "add", "--first=notanumber", "--second=1")
-        assert result.returncode == 1
+        assert result.returncode == 2  # EXIT_NO_MATCH
         prefix = "No Matches found for args: ['dummy_cli.py', 'add', '--first=notanumber', '--second=1']\n"
         assert result.stdout == prefix + DUMMY_CLI_MAN_PAGE
 
@@ -28,7 +28,7 @@ class TestTypeCoercion:
 
     def test_float_failure_is_a_no_match(self, run_tool):
         result = run_tool("dummy_cli.py", "scale", "--value=notafloat")
-        assert result.returncode == 1
+        assert result.returncode == 2  # EXIT_NO_MATCH
         assert "No Matches found" in result.stdout
 
     @pytest.mark.parametrize("value", ["true", "True", "TRUE", "t", "y", "yes"])
@@ -55,11 +55,11 @@ class TestTypeCoercion:
 
     def test_bool_garbage_value_is_a_no_match(self, run_tool):
         result = run_tool("dummy_cli.py", "toggle", "--enabled=maybe")
-        assert result.returncode == 1
+        assert result.returncode == 2  # EXIT_NO_MATCH
         assert "No Matches found" in result.stdout
 
     def test_bare_flag_on_non_bool_argument_is_a_no_match(self, run_tool):
         # `--name` with no value is only valid shorthand for True on a bool-typed argument.
         result = run_tool("dummy_cli.py", "greet", "--name")
-        assert result.returncode == 1
+        assert result.returncode == 2  # EXIT_NO_MATCH
         assert "No Matches found" in result.stdout
