@@ -1,9 +1,6 @@
 name: automated-tests
 
-on:
-  push:
-    branches:
-      - '*'
+on: [push]
 
 jobs:
   build:
