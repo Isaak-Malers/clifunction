@@ -28,4 +28,4 @@ jobs:
       - name: Build and publish
         run: |
           python -m build
-          python -m twine upload -u __token__ -p ${{ secrets.PYPI_ACCESS_TOKEN }} dist/*
+          python -m twine upload --skip-existing -u __token__ -p ${{ secrets.PYPI_ACCESS_TOKEN }} dist/*
