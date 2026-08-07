@@ -34,7 +34,7 @@ jobs:
           pytest ./integration_test --junitxml=./integration_test/results-${{ matrix.python-version }}.xml
 
       - name: Archive test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.python-version }}
           path: |
