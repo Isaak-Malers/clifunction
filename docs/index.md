@@ -15,7 +15,7 @@ def migrate_data_base(*, start_version: int = 0, end_version: int = 3):
 ```
 How you invoke that function:
 ```commandline
-isaak@laptop:/mnt/c/Users/isaak/dev/clifunction$ python3 Example.py migrate_data_base
+maintainer@laptop:/mnt/c/Users/maintainer/dev/clifunction$ python3 Example.py migrate_data_base
 migrate_data_base:  {}
 Migrating DB from 0 to 3
 ```
@@ -36,14 +36,14 @@ def migrate_data_base(*, start_version: int = 0, end_version: int = 3):
 
 2. Call your function from the command line:
 ```commandline
-isaak@laptop:/mnt/c/Users/isaak/dev/clifunction$ python3 Example.py migrate_data_base
+maintainer@laptop:/mnt/c/Users/maintainer/dev/clifunction$ python3 Example.py migrate_data_base
 migrate_data_base:  {}
 Migrating DB from 0 to 3
 ```
 
 3. Call your functions by auto-generated alias's, and handle Pythons built-in types:
 ```commandline
-isaak@laptop:/mnt/c/Users/isaak/dev/clifunction$ python3 Example.py mdb -sv=4 --end_version=5
+maintainer@laptop:/mnt/c/Users/maintainer/dev/clifunction$ python3 Example.py mdb -sv=4 --end_version=5
 migrate_data_base:  {'start_version': 4, 'end_version': 5}
 Migrating DB from 4 to 5
 ```
@@ -51,7 +51,7 @@ Migrating DB from 4 to 5
 4. Documentation, Error handling, and Man pages are all automatically generated:
 
 ```commandline
-isaak@laptop:/mnt/c/Users/isaak/dev/clifunction$ python3 Example.py
+maintainer@laptop:/mnt/c/Users/maintainer/dev/clifunction$ python3 Example.py
 Example.py
         deploy -- builds*, tests*, and then deploys the project
                 build_first | default:True | type:<class 'bool'>
@@ -70,7 +70,7 @@ Example.py
    need to enumerate targets/arguments/types without parsing the man page:
 
 ```commandline
-isaak@laptop:/mnt/c/Users/isaak/dev/clifunction$ python3 Example.py --schema
+maintainer@laptop:/mnt/c/Users/maintainer/dev/clifunction$ python3 Example.py --schema
 [
   {
     "name": "migrate_data_base",

@@ -49,9 +49,9 @@ already depending on it. Two options:
   `CliFunction.py` shim (`from clifunction import *` + `DeprecationWarning`) is the alternative
   but adds permanent-feeling cruft to a library whose entire value is having none — and per
   standing instruction, backwards-compat shims aren't the default move here.
-- **Shim for one release**, only if there's a known external consumer beyond Isaak who needs
-  warning. Worth a direct question to Isaak rather than a unilateral call — he's the one who
-  knows if anyone else imports this today.
+- **Shim for one release**, only if there's a known external consumer beyond the Accountable
+  Maintainer who needs warning. Worth a direct question to the Accountable Maintainer rather
+  than a unilateral call — they're the one who knows if anyone else imports this today.
 
 ## 2. Type decomposition
 
@@ -126,11 +126,12 @@ Two concrete, verified-empty coverage gaps (confirmed via `grep -rn "TypeError\|
   (see sequencing).
 - **`recursiveTargets`** (`Targets.__init__`: `self.recursiveTargets: [Targets] = []`) is declared,
   typed, and never read or written anywhere else in the codebase or tests — dead, unfinished
-  scaffolding for subcommand nesting that was never built. Under Isaak's own stated principle
-  (no half-finished implementations), this needs a decision, not a default: either finish it
-  (real nested-subcommand support — a real feature with real design work: how does abbreviation
-  matching behave across a nesting boundary?) or delete it. **This is a question for Isaak, not
-  a call this proposal makes** — worth surfacing directly rather than guessing.
+  scaffolding for subcommand nesting that was never built. Under the Accountable Maintainer's
+  own stated principle (no half-finished implementations), this needs a decision, not a
+  default: either finish it (real nested-subcommand support — a real feature with real design
+  work: how does abbreviation matching behave across a nesting boundary?) or delete it. **This
+  is a question for the Accountable Maintainer, not a call this proposal makes** — worth
+  surfacing directly rather than guessing.
 
 **Proposal:** close both gaps as independent PRs (see sequencing), and once the module split in
 section 2 lands, add one test file per new module boundary rather than per original method name —
@@ -168,7 +169,7 @@ Independent PRs, no major-version bump needed, can ship this week if desired:
 1. Fix missing-required-arg → proper `CliFunctionException`, with a regression test written
    first (per `unit-testing` skill).
 2. Decision + action on `recursiveTargets` (delete, or scope a real nested-subcommand design) —
-   needs Isaak's call before either branch starts.
+   needs the Accountable Maintainer's call before either branch starts.
 3. Fix the six `[str]`-literal annotations and the `Optional[dict]` return types; add `mypy` to
    `code-quality.yml`.
 

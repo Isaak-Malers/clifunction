@@ -51,8 +51,8 @@ already standards-compliant enough that uv had nothing to work around.
   install` directly; they were not switched to `astral-sh/setup-uv`. This is a natural follow-up
   (faster installs, uses the committed lockfile for reproducibility) but CI changes ride on every
   push to main alongside the auto-publish job (see `version-validation` skill) — that's a
-  higher-blast-radius change than adding a local dev-dependency table, and Isaak said he wants to
-  review before push. Left as a recommendation, not applied.
+  higher-blast-radius change than adding a local dev-dependency table, and the Accountable
+  Maintainer said they want to review before push. Left as a recommendation, not applied.
 - **No `[project.optional-dependencies]` added.** Since there are zero runtime dependencies,
   there's nothing for an extras group to gate. Don't add one speculatively.
 

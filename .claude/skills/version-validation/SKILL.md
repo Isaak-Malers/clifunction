@@ -1,6 +1,6 @@
 ---
 name: version-validation
-description: Use before any push to main, or before recommending Isaak push to main. clifunction auto-publishes to PyPI on every push to main with no approval gate — this is the pre-flight check that CI itself does not provide.
+description: Use before any push to main, or before recommending the Accountable Maintainer push to main. clifunction auto-publishes to PyPI on every push to main with no approval gate — this is the pre-flight check that CI itself does not provide.
 ---
 
 # Pre-publish validation for clifunction
@@ -69,6 +69,6 @@ preventative local check. This skill is that preventative check, run before the 
 
 ## What this skill does not cover
 
-Actually pushing, or authorizing a push — that decision belongs to Isaak per the standing
-instruction to review before commit/push (global `CLAUDE.md`). This skill's job is to make sure
-that when he does push, nothing above surprises him mid-CI.
+Actually pushing, or authorizing a push — that decision belongs to the Accountable Maintainer
+per the standing instruction to review before commit/push (global `CLAUDE.md`). This skill's
+job is to make sure that when they do push, nothing above surprises them mid-CI.

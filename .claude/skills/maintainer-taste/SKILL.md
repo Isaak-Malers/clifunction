@@ -57,7 +57,7 @@ Ask in this order — the first "no" ends the review:
 
 ## What "AI-first" means here, specifically
 
-Isaak's stated reason for investing in this again: agents write throwaway CLIs constantly and
+The Accountable Maintainer's stated reason for investing in this again: agents write throwaway CLIs constantly and
 need a library that's cheap to reach for. That pulls in one direction only — *reduce the amount
 an agent needs to know to use this correctly* — not "add features agents might want":
 
