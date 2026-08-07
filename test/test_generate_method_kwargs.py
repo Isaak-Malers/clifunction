@@ -1,4 +1,4 @@
-from ..CliFunction import DefaultArgumentParser
+from clifunction import DefaultArgumentParser
 
 
 class TestGenerateMethodKwargs:
@@ -93,9 +93,19 @@ class TestGenerateMethodKwargs:
             '--arg8=h',
             '--arg9=i'],
             function=self.complex_method) == {"arg1": "a", "arg2": "b", "arg3": "c", "arg4": "d", "arg5": "e", "arg6": "f", "arg7": "g", "arg8": "h", "arg9": "i"}
+
+    def test_missing_required_arg_is_not_a_match(self):
+        """
+        complex_method has 9 required (no-default) kwonly args.  Supplying only some of them
+        used to return a partial dict that would blow up with an uncaught TypeError when the
+        caller actually invoked the function.  A candidate that can't be invoked is not a match.
+        """
         assert self.t.generate_method_kwargs(args=[
             'CliFunction',
             'complex_method',
             '--arg1=a',
             '--arg2=b'],
-            function=self.complex_method) == {"arg1": "a", "arg2": "b"}
+            function=self.complex_method) is None
+
+    def test_missing_optional_arg_is_still_a_match(self):
+        assert self.t.generate_method_kwargs(args=['CliFunction', 'some_args'], function=self.some_args) == {}

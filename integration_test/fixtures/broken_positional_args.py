@@ -4,7 +4,7 @@ Registers a target with a positional argument. clifunction requires exclusively 
 arguments (a bare `*` as the first parameter) -- add_target() should refuse this at decoration
 time.
 """
-from CliFunction import cli_function, cli
+from clifunction import cli_function, cli
 
 
 @cli_function

@@ -15,9 +15,9 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install Flake8 and PyLint
+      - name: Install Flake8, PyLint, and mypy
         run: |
-          pip install flake8 pylint
+          pip install flake8 pylint mypy
 
       - name: Run Flake8
         run: |
@@ -27,6 +27,10 @@ jobs:
         run: |
           pylint --disable=line-too-long,invalid-name,missing-module-docstring ./*.py
 
+      - name: Run PyLint on clifunction package
+        run: |
+          pylint --disable=line-too-long,invalid-name,missing-module-docstring ./clifunction/*.py
+
       - name: Run PyLint on test directory
         run: |
           pylint --disable=line-too-long,invalid-name,missing-module-docstring,import-error,missing-class-docstring,comparison-of-constants,missing-function-docstring,too-few-public-methods,R0801 ./test/*.py
@@ -34,3 +38,7 @@ jobs:
       - name: Run PyLint on integration_test directory
         run: |
           pylint --disable=line-too-long,invalid-name,missing-module-docstring,import-error,missing-class-docstring,comparison-of-constants,missing-function-docstring,too-few-public-methods,R0801 ./integration_test/*.py ./integration_test/fixtures/*.py
+
+      - name: Run mypy
+        run: |
+          mypy clifunction/

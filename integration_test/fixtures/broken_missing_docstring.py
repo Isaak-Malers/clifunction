@@ -3,7 +3,7 @@
 Registers a target with no docstring. add_target() should refuse this at decoration time --
 the script should never even reach cli(), let alone print a man page.
 """
-from CliFunction import cli_function, cli
+from clifunction import cli_function, cli
 
 
 @cli_function

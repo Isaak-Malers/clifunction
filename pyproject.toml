@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "clifunction"
-version = "0.2.4"
+version = "1.0.0"
 authors = [
   { name="Isaak Malers", email="isaak.malers+clifunction@gmail.com" },
 ]
@@ -24,10 +24,19 @@ classifiers = [
 
 
 [tool.hatch.build]
-include = ["CliFunction.py"]
+include = ["clifunction/**/*.py"]
 exclude = [
     "Example.py",
     "/docs",
     "/test",
     "/_site"
+]
+
+[dependency-groups]
+dev = [
+    "flake8>=5.0.4",
+    "mkdocs>=1.6.1",
+    "mypy>=1.14.1",
+    "pylint>=3.2.7",
+    "pytest>=8.3.5",
 ]

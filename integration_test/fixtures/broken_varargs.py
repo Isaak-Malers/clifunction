@@ -3,7 +3,7 @@
 Registers a target that uses *args. clifunction does not support varargs -- add_target() should
 refuse this at decoration time.
 """
-from CliFunction import cli_function, cli
+from clifunction import cli_function, cli
 
 
 @cli_function

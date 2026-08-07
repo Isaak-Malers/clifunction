@@ -10,9 +10,9 @@ class TestHappyPath:
         assert result.stderr == ""
 
     def test_explicit_argument_overrides_default(self, run_tool):
-        result = run_tool("dummy_cli.py", "greet", "--name=Isaak")
+        result = run_tool("dummy_cli.py", "greet", "--name=Accountable Maintainer")
         assert result.returncode == 0
-        assert result.stdout == "greet:  {'name': 'Isaak'}\nHello, Isaak!\n"
+        assert result.stdout == "greet:  {'name': 'Accountable Maintainer'}\nHello, Accountable Maintainer!\n"
 
     def test_multiple_required_arguments(self, run_tool):
         result = run_tool("dummy_cli.py", "add", "--first=2", "--second=3")

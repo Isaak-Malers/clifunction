@@ -1,6 +1,6 @@
 import pytest
 
-from ..CliFunction import Targets, CliFunctionException
+from clifunction import Targets, CliFunctionException
 
 
 def one():
