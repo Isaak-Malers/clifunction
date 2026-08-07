@@ -10,7 +10,12 @@ Enables you to build a CLI with python in the most straightforward way with the 
 # Full Documentation:
 https://isaak-malers.github.io/clifunction/#getting-started
 
-# Get it with PIP:
+# Install:
+```bash
+pip install clifunction
+# or
+uv add clifunction
+```
 https://pypi.org/project/clifunction/
 
 # Interested in Contributing?:

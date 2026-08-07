@@ -36,14 +36,13 @@ For a target file `X.py` built with clifunction:
    running. Confirm this line alone is enough to tell an agent what actually got invoked and
    with what values — no silent argument coercion (e.g. a typo'd flag name should not silently
    resolve to a same-shaped different argument).
-5. **Missing required argument.** Call a target missing a required keyword-only arg.
-   **Fixed as of the `1.0.0` restructure** — this used to leak a raw Python `TypeError` traceback
-   instead of a clean CLI error (the single worst thing in the old UX for an agent, because the
-   traceback looked like a bug in the *target* function, not a usage error). It's now treated as
-   a normal no-match: `No Matches found for args: [...]` followed by the man page, same as any
-   other unresolvable invocation. Verify this is still true when auditing — if a future change to
-   `generate_method_kwargs` (`clifunction/parsing.py`) reintroduces a path where a candidate with
-   missing required args gets invoked anyway, that's a P1 regression, not a style nit.
+5. **Missing required argument.** Call a target missing a required keyword-only arg. Must be
+   treated as a normal no-match: `No Matches found for args: [...]` followed by the man page,
+   same as any other unresolvable invocation — never a leaked Python `TypeError` traceback, which
+   would look like a bug in the *target* function rather than a usage error. Verify this when
+   auditing — if a future change to `generate_method_kwargs` (`clifunction/parsing.py`)
+   reintroduces a path where a candidate with missing required args gets invoked anyway, that's a
+   P1 regression, not a style nit.
 6. **Bool flag symmetry.** For every bool kwarg, verify both `--flag` (bare, coerces to `True`)
    and `--flag=false`/`--flag=true` work, and that `--flag=maybe` or similar garbage returns "no
    match" rather than silently defaulting. `type_coercer` only accepts
@@ -59,17 +58,16 @@ For a target file `X.py` built with clifunction:
 8. **Zero-arg function formatting.** Functions with no kwonly args currently render a trailing
    empty indented line in the man page (`build -- ...\n\t\t`). Cosmetic, not a blocker — note it,
    don't block a release over it alone.
-9. **Exit codes are differentiated as of `1.0.0`.** `0` = success. `1` = no args given at all
+9. **Exit codes are differentiated.** `0` = success. `1` = no args given at all
    (`clifunction.EXIT_NO_ARGS`). `2` = a target name was given but nothing matched
-   (`EXIT_NO_MATCH`). `3` = more than one candidate matched (`EXIT_AMBIGUOUS_MATCH`). There is
-   still no distinct code for "the target itself raised" — that's a deliberate scope cut (see
-   `docs/major-version-rev-proposal.md` section 4 / `maintainer-taste` constraint 4: wrapping the
-   target call in a try/except just to tag the exit code would blur the wrapper-vs-target-code
-   distinction `CliFunctionException` exists to preserve). An uncaught exception from the target
-   still surfaces as Python's normal traceback + default nonzero exit, which in practice is
-   already trivially distinguishable from the other three cases by an agent looking at output.
-   Verify the specific codes with real invocations, not just by reading the source — they're easy
-   to renumber accidentally.
+   (`EXIT_NO_MATCH`). `3` = more than one candidate matched (`EXIT_AMBIGUOUS_MATCH`). There is no
+   distinct code for "the target itself raised" — that's a deliberate scope cut (see
+   `maintainer-taste` constraint 4: wrapping the target call in a try/except just to tag the exit
+   code would blur the wrapper-vs-target-code distinction `CliFunctionException` exists to
+   preserve). An uncaught exception from the target still surfaces as Python's normal traceback +
+   default nonzero exit, which in practice is already trivially distinguishable from the other
+   three cases by an agent looking at output. Verify the specific codes with real invocations, not
+   just by reading the source — they're easy to renumber accidentally.
 10. **stdout only, nothing interactive.** Confirm the target file introduces no `input()`
     prompts, no ANSI color, no progress bars. clifunction itself is clean on this; the audit is
     to catch a *target file* author reintroducing it inside their own function bodies.

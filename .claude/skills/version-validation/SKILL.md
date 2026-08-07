@@ -23,11 +23,11 @@ preventative local check. This skill is that preventative check, run before the 
 1. **Tests pass, run the way CI runs them.** `pytest ./test` from repo root (see `unit-testing`
    skill for why "from repo root" matters — that's what puts the package on `sys.path` so
    `from clifunction import ...` resolves without installing anything).
-   `automated-tests.yml`'s matrix covers Python 3.8–3.12. If the local interpreter is outside
-   that range (verify with `python3 --version`), passing locally is not proof CI will pass —
-   note the gap explicitly rather than asserting confidence you don't have. As of this check,
-   the matrix does not include 3.13/3.14 even though `requires-python = ">=3.8"` has no upper
-   bound — flag this mismatch if a change specifically depends on 3.13+ behavior.
+   `automated-tests.yml`'s matrix covers Python 3.8–3.14, and all seven `build (*)` jobs plus
+   `code-quality` are required status checks on `main` — nothing merges without all eight green.
+   If the local interpreter is outside that range (verify with `python3 --version`), passing
+   locally is not proof CI will pass — note the gap explicitly rather than asserting confidence
+   you don't have.
 2. **Lint and type-check are clean, exactly as CI invokes them** (all three must exit 0, don't
    approximate with a subset):
    ```bash
@@ -36,22 +36,20 @@ preventative local check. This skill is that preventative check, run before the 
    pylint --disable=line-too-long,invalid-name,missing-module-docstring,import-error,missing-class-docstring,comparison-of-constants,missing-function-docstring,too-few-public-methods,R0801 ./test/*.py
    mypy clifunction/
    ```
-   (`mypy` was added to `code-quality.yml` alongside flake8/pylint — it catches things they
-   don't, e.g. it originally found 11 real errors from invalid `[str]`-literal annotations and
-   `-> dict` signatures that actually returned `None` on failure paths. Also watch for pylint
-   disable-comment scope: they run to the end of the enclosing block, not just "the next line" —
-   splitting `CliFunction.py` into `clifunction/*.py` exposed one real violation that a
-   mis-scoped disable comment had been silently hiding for years. See `CLAUDE.md`.)
+   (`mypy` catches things flake8/pylint don't, e.g. invalid `[str]`-literal annotations or a
+   `-> dict` signature that actually returns `None` on a failure path. Also watch for pylint
+   disable-comment scope: a `# pylint: disable=X` comment runs to the end of the enclosing block,
+   not just "the next line" — see `CLAUDE.md`'s gotcha note.)
 3. **Build succeeds and ships what you think it ships.** `python -m build` or `uv build`, then
    actually open the wheel (`unzip -l dist/*.whl`) and confirm the file list matches
-   `[tool.hatch.build] include`/`exclude` in `pyproject.toml`. As of `1.0.0` this project ships
-   the whole `clifunction/` package (six files) — if a change added a new module, a new
-   resource, or renamed something, it will silently *not* be in the published package unless
-   `include` was updated too. This has no test coverage; it's a manual check every time
-   `include`/`exclude` or the module layout changes. (Also worth the extra step done for the
-   `1.0.0` restructure: `pip install` the built wheel into a genuinely clean venv and confirm
-   `from clifunction import ...` actually works — a stale editable install or sys.path leftover
-   from dev work can hide a real packaging bug that `uv build` alone won't catch.)
+   `[tool.hatch.build] include`/`exclude` in `pyproject.toml`. This project ships the whole
+   `clifunction/` package (six files) — if a change added a new module, a new resource, or
+   renamed something, it will silently *not* be in the published package unless `include` was
+   updated too. This has no test coverage; it's a manual check every time `include`/`exclude` or
+   the module layout changes. (Also worth the extra step: `pip install` the built wheel into a
+   genuinely clean venv and confirm `from clifunction import ...` actually works — a stale
+   editable install or sys.path leftover from dev work can hide a real packaging bug that
+   `uv build` alone won't catch.)
 4. **Version was actually bumped, and bumped in the one place that matters.** `version` lives in
    `pyproject.toml`'s `[project]` table only — there is no `__version__` string inside the
    `clifunction` package to keep in sync (confirm this is still true; if a future change adds
@@ -63,7 +61,7 @@ preventative local check. This skill is that preventative check, run before the 
    project page, and the docs site) — check it reads correctly as both a standalone doc and a
    PyPI long-description.
 6. **Diff the actual change against what four separate CI jobs will do with it**, not just
-   against "does the feature work." A one-line change to `pyproject.toml` (e.g. this session's
+   against "does the feature work." A one-line change to `pyproject.toml` (e.g. a
    `[dependency-groups]` addition) still triggers all four workflows on push — small diff,
    full blast radius, because the trigger is "pushed to main," not "touched publishable code."
 
